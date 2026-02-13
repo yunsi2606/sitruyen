@@ -47,6 +47,44 @@ services:
     #     reservations:
     #       memory: 512M
 
+  frontend:
+    build:
+      context: ../src/frontend
+      dockerfile: Dockerfile
+    container_name: sitruyen-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
+      NODE_ENV: production
+    networks:
+      - database_network
+      - default
+    depends_on:
+      - strapi
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: sitruyen-tunnel
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+    depends_on:
+      - strapi
+    environment:
+      - TUNNEL_METRICS=0.0.0.0:3000
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3000/ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    networks:
+      - default
+      - database_network
+
 volumes:
   strapi_uploads:
     driver: local
