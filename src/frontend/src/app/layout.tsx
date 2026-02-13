@@ -4,7 +4,7 @@ import "./globals.css";
 import "@/styles/animations.css";
 
 export const metadata = {
-  title: 'MangaReader - Read Free Manga Online',
+  title: 'SiTruyen - Read Free Manga Online',
   description: 'Read manga online for free in high quality. Updated daily with new chapters.',
 };
 

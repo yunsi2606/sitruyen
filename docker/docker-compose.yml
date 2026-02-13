@@ -56,7 +56,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
+      NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://localhost:1337}
+      STRAPI_INTERNAL_URL: ${STRAPI_INTERNAL_URL:-http://strapi:1337}
       NODE_ENV: production
     networks:
       - database_network

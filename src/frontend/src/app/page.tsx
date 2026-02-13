@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Play, BookOpen, Star, TrendingUp, Grid, List as ListIcon, Clock } from "lucide-react";
 import { fetchAPI, getStrapiMedia } from "@/lib/api"
+
+export const dynamic = "force-dynamic";
+
 // Data types
 interface ContentItem {
   id: number;
