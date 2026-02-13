@@ -3,7 +3,7 @@
 import { Chapter } from "@/types";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronRight, Clock } from "lucide-react";
+import { ChevronRight, Clock, Eye } from "lucide-react";
 
 interface ChapterListProps {
     chapters: Chapter[];
@@ -24,9 +24,15 @@ export function ChapterList({ chapters, mangaSlug }: ChapterListProps) {
                         <span className="text-base font-medium group-hover:text-primary transition-colors line-clamp-1">
                             {chapter.title}
                         </span>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Clock className="w-3 h-3" />
-                            <span className="capitalize">{formatDistanceToNow(new Date(chapter.createdAt), { addSuffix: true })}</span>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                                <Clock className="w-3 h-3" />
+                                <span className="capitalize">{formatDistanceToNow(new Date(chapter.createdAt), { addSuffix: true })}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <Eye className="w-3 h-3" />
+                                <span>{chapter.view_count ? new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(chapter.view_count) : 0}</span>
+                            </div>
                         </div>
                     </div>
 

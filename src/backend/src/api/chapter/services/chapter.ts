@@ -8,7 +8,7 @@ import { factories } from '@strapi/strapi';
 // Key: "ip-IP-chapterId" or "user-UserId-chapterId"
 // Value: Timestamp of last view
 const viewCache = new Map<string, number>();
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const CACHE_DURATION = 10 * 1000; // 10 seconds for testing, increase later
 
 export default factories.createCoreService('api::chapter.chapter', ({ strapi }) => ({
     async readChapter(chapterId: string | number, user: any, ip: string) {
@@ -32,28 +32,34 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
         if (!lastViewTime || (now - lastViewTime) > CACHE_DURATION) {
             viewCache.set(spamKey, now);
 
-            // Increment Chapter View (use documentId if available, else id)
-            const chapDocId = chapter.documentId || chapter.id;
             const currentChapterViews = chapter.view_count ? Number(chapter.view_count) : 0;
+            const newChapterViews = currentChapterViews + 1;
 
-            await strapi.entityService.update('api::chapter.chapter', chapDocId, {
+            // Try to update using documentId if available (Strapi 5), else ID
+            const whereClause = chapter.documentId ? { documentId: chapter.documentId } : { id: chapter.id };
+
+            await strapi.db.query('api::chapter.chapter').update({
+                where: whereClause,
                 data: {
-                    view_count: (currentChapterViews + 1).toString(),
+                    view_count: newChapterViews,
                 },
             });
 
             // Increment Story View
             if (chapter.story) {
-                const storyDocId = chapter.story.documentId || chapter.story.id;
                 const currentStoryViews = chapter.story.view_count ? Number(chapter.story.view_count) : 0;
+                const newStoryViews = currentStoryViews + 1;
+                const storyWhere = chapter.story.documentId ? { documentId: chapter.story.documentId } : { id: chapter.story.id };
 
-                await strapi.entityService.update('api::story.story', storyDocId, {
+                await strapi.db.query('api::story.story').update({
+                    where: storyWhere,
                     data: {
-                        view_count: (currentStoryViews + 1).toString(),
+                        view_count: newStoryViews,
                     },
                 });
             }
 
+            strapi.log.info(`Incremented view for Chapter ${chapterId} -> ${newChapterViews} | Story: ${chapter.story?.id}`);
             viewIncremented = true;
         }
 

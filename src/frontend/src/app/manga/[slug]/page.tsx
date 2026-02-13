@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { Star, Clock, ListChecks, Play, BookOpen } from "lucide-react";
+import { Star, Clock, ListChecks, Play, BookOpen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils"; // assuming cn utility available or inline
 import { fetchAPI, getStrapiMedia } from "@/lib/api";
 import { Manga, Chapter } from "@/types";
@@ -19,7 +19,7 @@ interface Params {
 async function getManga(slug: string): Promise<Manga | null> {
     try {
         // Fetch fields and relations
-        const query = `?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[chapters][fields][0]=title&populate[chapters][fields][1]=slug&populate[chapters][fields][2]=chapter_number&populate[chapters][fields][3]=createdAt&populate[chapters][sort][0]=chapter_number:desc`;
+        const query = `?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[chapters][fields][0]=title&populate[chapters][fields][1]=slug&populate[chapters][fields][2]=chapter_number&populate[chapters][fields][3]=createdAt&populate[chapters][fields][4]=view_count&populate[chapters][sort][0]=chapter_number:desc`;
 
         const response = await fetchAPI(`/stories${query}`);
         if (!response.data || response.data.length === 0) {
@@ -40,12 +40,14 @@ async function getManga(slug: string): Promise<Manga | null> {
             cover: getStrapiMedia(attributes.cover?.data?.attributes?.url || attributes.cover?.url || null) || "",
             rating: attributes.rating || 0,
             status: attributes.story_status ? (attributes.story_status === 'completed' ? 'Completed' : 'Ongoing') : 'Ongoing',
+            view_count: attributes.view_count ? Number(attributes.view_count) : 0,
             genres: attributes.categories?.data?.map((c: any) => c.attributes?.name || c.name) || [],
             chapters: (Array.isArray(attributes.chapters) ? attributes.chapters : attributes.chapters?.data)?.map((c: any) => ({
                 id: c.id.toString(),
                 title: c.attributes?.title || c.title,
                 slug: c.attributes?.slug || c.slug,
                 number: c.attributes?.chapter_number || c.chapter_number,
+                view_count: c.attributes?.view_count ? Number(c.attributes?.view_count) : 0,
                 pages: [], // Not needed for list
                 createdAt: c.attributes?.createdAt || c.createdAt
             })) || []
@@ -113,6 +115,10 @@ export default async function MangaDetail(props: Params) {
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full border border-yellow-500/20 font-medium text-sm">
                                 <Star className="w-4 h-4 fill-current" />
                                 {manga.rating || "N/A"}
+                            </div>
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full border border-blue-500/20 font-medium text-sm">
+                                <Eye className="w-4 h-4" />
+                                {manga.view_count ? new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(manga.view_count) : 0} Views
                             </div>
                             <div className={cn(
                                 "flex items-center gap-1.5 px-3 py-1 rounded-full border font-medium text-sm",
