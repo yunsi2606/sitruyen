@@ -1,0 +1,60 @@
+# Docker Ignore for Strapi
+
+# Dependencies
+node_modules
+.npm
+
+# Build output (will be rebuilt in Docker)
+dist
+build
+.cache
+
+# Database & temp files
+*.sqlite
+.tmp
+.strapi
+
+# Environment files (use docker env instead)
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test
+coverage
+.nyc_output
+
+# Documentation
+*.md
+!README.md
+LICENSE*
+license*
+
+# Git
+.git
+.gitignore
+
+# Docker files (don't need to copy into image)
+docker-compose*.yml
+Dockerfile*
+
+# Uploads (will use volume)
+public/uploads/*
+!public/uploads/.gitkeep

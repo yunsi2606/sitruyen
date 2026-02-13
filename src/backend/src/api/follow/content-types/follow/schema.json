@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "follows",
+  "info": {
+    "singularName": "follow",
+    "pluralName": "follows",
+    "displayName": "Follow"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "follows"
+    },
+    "story": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::story.story",
+      "inversedBy": "follows"
+    },
+    "follow_at": {
+      "type": "datetime"
+    }
+  }
+}

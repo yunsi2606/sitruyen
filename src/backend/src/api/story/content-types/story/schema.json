@@ -1,0 +1,107 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stories",
+  "info": {
+    "singularName": "story",
+    "pluralName": "stories",
+    "displayName": "Story"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "stories"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "stories"
+    },
+    "total_chapters": {
+      "type": "integer"
+    },
+    "view_count": {
+      "type": "biginteger"
+    },
+    "follow_count": {
+      "type": "integer"
+    },
+    "rating": {
+      "type": "decimal"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "story"
+    },
+    "follows": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::follow.follow",
+      "mappedBy": "story"
+    },
+    "ratings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::rating.rating",
+      "mappedBy": "story"
+    },
+    "reading_histories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reading-history.reading-history",
+      "mappedBy": "story"
+    },
+    "chapters": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chapter.chapter",
+      "mappedBy": "story"
+    },
+    "story_status": {
+      "type": "enumeration",
+      "enum": [
+        "ongoing",
+        "completed",
+        "dropped"
+      ]
+    },
+    "story_published_at": {
+      "type": "date"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_trending": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

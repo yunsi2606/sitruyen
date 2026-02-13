@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reading-histories",
+  "info": {
+    "singularName": "reading-history",
+    "pluralName": "reading-histories",
+    "displayName": "Reading History"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reading_histories"
+    },
+    "story": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::story.story",
+      "inversedBy": "reading_histories"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "inversedBy": "reading_histories"
+    },
+    "history_updated_at": {
+      "type": "datetime"
+    }
+  }
+}
