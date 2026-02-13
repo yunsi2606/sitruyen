@@ -67,7 +67,7 @@ services:
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: sitruyen-tunnel
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     restart: unless-stopped
     depends_on:
       - strapi

@@ -16,9 +16,9 @@
       "required": true
     },
     "slug": {
-      "type": "uid",
-      "targetField": "title",
-      "required": true
+      "type": "string",
+      "required": true,
+      "unique": false
     },
     "chapter_number": {
       "type": "decimal"
