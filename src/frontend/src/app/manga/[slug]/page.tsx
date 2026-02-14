@@ -19,38 +19,56 @@ interface Params {
 async function getManga(slug: string): Promise<Manga | null> {
     try {
         // Fetch fields and relations
-        const query = `?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[chapters][fields][0]=title&populate[chapters][fields][1]=slug&populate[chapters][fields][2]=chapter_number&populate[chapters][fields][3]=createdAt&populate[chapters][fields][4]=view_count&populate[chapters][sort][0]=chapter_number:desc`;
+        const query = `?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[categories][fields][1]=slug&populate[chapters][sort][0]=chapter_number:desc`;
 
+        console.log(`Fetching manga with slug: ${slug}, Query: ${query}`);
         const response = await fetchAPI(`/stories${query}`);
+
         if (!response.data || response.data.length === 0) {
+            console.log("No manga found for slug:", slug);
             return null;
         }
 
         const item = response.data[0];
         const attributes = item.attributes || item;
 
+        // Debug logging enabled to verify data
+        console.log("Fetched Manga Title:", attributes.title);
+        console.log("Fetched Categories Raw:", JSON.stringify(attributes.categories, null, 2));
+        if (attributes.chapters?.data?.length > 0) {
+            console.log("First Chapter Sample:", JSON.stringify(attributes.chapters.data[0], null, 2));
+        }
         return {
             id: item.id.toString(),
             title: attributes.title,
             slug: attributes.slug,
-            // Format description
+
             description: Array.isArray(attributes.description)
                 ? attributes.description.map((block: any) => block.children?.map((child: any) => child.text).join('')).join('\n\n')
                 : typeof attributes.description === 'string' ? attributes.description : "",
+
             cover: getStrapiMedia(attributes.cover?.data?.attributes?.url || attributes.cover?.url || null) || "",
             rating: attributes.rating || 0,
             status: attributes.story_status ? (attributes.story_status === 'completed' ? 'Completed' : 'Ongoing') : 'Ongoing',
             view_count: attributes.view_count ? Number(attributes.view_count) : 0,
-            genres: attributes.categories?.data?.map((c: any) => c.attributes?.name || c.name) || [],
-            chapters: (Array.isArray(attributes.chapters) ? attributes.chapters : attributes.chapters?.data)?.map((c: any) => ({
-                id: c.id.toString(),
-                title: c.attributes?.title || c.title,
-                slug: c.attributes?.slug || c.slug,
-                number: c.attributes?.chapter_number || c.chapter_number,
-                view_count: c.attributes?.view_count ? Number(c.attributes?.view_count) : 0,
-                pages: [], // Not needed for list
-                createdAt: c.attributes?.createdAt || c.createdAt
-            })) || []
+
+            genres: (Array.isArray(attributes.categories) ? attributes.categories : attributes.categories?.data || [])
+                .map((c: any) => c.attributes?.name || c.name)
+                .filter(Boolean) || [],
+
+            chapters: (Array.isArray(attributes.chapters) ? attributes.chapters : attributes.chapters?.data || [])
+                .map((c: any) => {
+                    const attrs = c.attributes || c;
+                    return {
+                        id: c.id.toString(),
+                        title: attrs.title,
+                        slug: attrs.slug,
+                        number: attrs.chapter_number,
+                        view_count: attrs.view_count ? Number(attrs.view_count) : 0,
+                        pages: [], // Not needed for list
+                        createdAt: attrs.createdAt
+                    };
+                }) || []
         };
     } catch (error) {
         console.error("Error fetching manga:", error);
