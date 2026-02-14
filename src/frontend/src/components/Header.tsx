@@ -2,13 +2,20 @@
 
 import { useTheme } from "next-themes";
 import Link from 'next/link';
-import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Star } from "lucide-react";
-import { useState } from "react";
+import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Star, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { auth } from "@/lib/auth";
 
 export function Header() {
     const { theme, setTheme } = useTheme();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const currentUser = auth.getUser();
+        setUser(currentUser);
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 h-[72px] bg-[rgba(31,31,31,0.95)] backdrop-blur-sm shadow-sm border-b border-white/5 box-border">
@@ -113,11 +120,47 @@ export function Header() {
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full border-2 border-surface animate-pulse"></span>
                         </button>
 
-                        {/* Login Button (Skeleton) */}
-                        <Link href="/login" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full py-1.5 px-4 transition-all group">
-                            <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center text-[10px] font-bold text-white">U</div>
-                            <span className="text-sm font-medium text-white hidden sm:block">Login</span>
-                        </Link>
+                        {user ? (
+                            <div className="relative group/user">
+                                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full py-1.5 px-4 transition-all">
+                                    <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                                        {user.username?.[0] || "U"}
+                                    </div>
+                                    <span className="text-sm font-medium text-white hidden sm:block max-w-[100px] truncate">
+                                        {user.username}
+                                    </span>
+                                    <ChevronDown className="w-3 h-3 text-muted" />
+                                </button>
+
+                                {/* User Dropdown */}
+                                <div className="invisible opacity-0 translate-y-2 group-hover/user:visible group-hover/user:opacity-100 group-hover/user:translate-y-0 transition-all duration-200 ease-out absolute right-0 top-full mt-2 w-48 bg-[#1f1f1f] rounded-xl border border-white/10 shadow-xl py-2 z-50">
+                                    <div className="px-4 py-3 border-b border-white/5 mb-1">
+                                        <p className="text-sm font-medium text-white truncate">{user.username}</p>
+                                        <p className="text-xs text-muted truncate">{user.email}</p>
+                                    </div>
+
+                                    <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:text-white hover:bg-white/5 transition-colors">
+                                        <User className="w-4 h-4" /> Profile
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            auth.logout();
+                                            setUser(null);
+                                        }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors text-left"
+                                    >
+                                        <LogOut className="w-4 h-4" /> Logout
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <Link href="/login" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full py-1.5 px-4 transition-all group">
+                                <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                                    <User className="w-3 h-3" />
+                                </div>
+                                <span className="text-sm font-medium text-white hidden sm:block">Login</span>
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile Menu */}
