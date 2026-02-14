@@ -144,6 +144,105 @@ export const chapterService = {
     }
 };
 
+// Reading History Service
+export const historyService = {
+    // Get user's reading history
+    async getHistory(userId: number, token: string, page = 1, limit = 20): Promise<any[]> {
+        try {
+            const query = `/reading-histories?filters[user][id][$eq]=${userId}&populate[story][populate][cover][fields][0]=url&populate[chapter][fields][0]=chapter_number&populate[chapter][fields][1]=slug&populate[chapter][fields][2]=title&sort=history_updated_at:desc&pagination[page]=${page}&pagination[pageSize]=${limit}`;
+
+            const res = await fetchAPI(query, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!res.data || !Array.isArray(res.data)) return [];
+
+            // Normalize Data
+            return res.data.map((item: any) => {
+                const isV4 = !!item.attributes;
+                const data = isV4 ? item.attributes : item;
+
+                // Helper to extract relation
+                const getRelation = (rel: any) => {
+                    if (!rel) return null;
+                    if (rel.data && rel.data.attributes) { // v4 relation
+                        return { id: rel.data.id, ...rel.data.attributes };
+                    }
+                    if (rel.data) return rel.data; // v5 relation wrapper
+                    return rel; // flat
+                };
+
+                return {
+                    id: item.id,
+                    ...data,
+                    story: getRelation(data.story),
+                    chapter: getRelation(data.chapter),
+                    history_updated_at: data.history_updated_at || data.updatedAt
+                };
+            });
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            return [];
+        }
+    },
+
+    // Save reading progress (Upsert: Create if new, Update if exists)
+    async saveHistory(userId: number, storyId: number, chapterId: number, token: string): Promise<void> {
+        try {
+            // Check if record exists for this User + Story
+            const checkQuery = `/reading-histories?filters[user][id][$eq]=${userId}&filters[story][id][$eq]=${storyId}`;
+            const existing = await fetchAPI(checkQuery, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const now = new Date().toISOString();
+
+            if (existing.data && existing.data.length > 0) {
+                // UPDATE existing record
+                const record = existing.data[0];
+                const recordId = record.documentId || record.id; // Support v5/v4
+
+                const payload = {
+                    data: {
+                        chapter: chapterId,
+                        history_updated_at: now
+                    }
+                };
+
+                await fetchAPI(`/reading-histories/${recordId}`, {}, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                // CREATE new record
+                const payload = {
+                    data: {
+                        user: userId,
+                        story: storyId,
+                        chapter: chapterId,
+                        history_updated_at: now
+                    }
+                };
+
+                await fetchAPI(`/reading-histories`, {}, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+        } catch (error) {
+            console.error("Error saving reading history:", error);
+        }
+    }
+};
+
 export const categoryService = {
     // Get all categories
     async getAll(limit = 100): Promise<any[]> {

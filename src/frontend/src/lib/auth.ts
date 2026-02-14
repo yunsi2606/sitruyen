@@ -98,6 +98,10 @@ export const auth = {
         return null;
     },
 
+    getToken() {
+        return getCookie("token");
+    },
+
     isAuthenticated() {
         return !!getCookie("token");
     }

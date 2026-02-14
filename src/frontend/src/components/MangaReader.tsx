@@ -7,7 +7,8 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { CommentSection } from "@/components/CommentSection";
 import { ReaderControls } from "@/components/ReaderControls";
-import { chapterService } from "@/services/api";
+import { chapterService, historyService } from "@/services/api";
+import { auth } from "@/lib/auth";
 
 interface MangaReaderProps {
     manga: Manga;
@@ -42,7 +43,14 @@ export function MangaReader({ manga, chapter }: MangaReaderProps) {
 
         // Increment view count
         chapterService.markAsRead(Number(chapter.id));
-    }, [chapter.id]);
+
+        // Save History (if logged in)
+        const user = auth.getUser();
+        const token = auth.getToken();
+        if (user && token) {
+            historyService.saveHistory(user.id, Number(manga.id), Number(chapter.id), token);
+        }
+    }, [chapter.id, manga.id]);
 
     return (
         <div className="relative flex flex-col items-center w-full min-h-screen bg-background" ref={readerRef}>
