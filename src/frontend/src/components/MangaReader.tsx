@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { CommentSection } from "@/components/CommentSection";
 import { ReaderControls } from "@/components/ReaderControls";
-import { fetchAPI } from "@/lib/api";
+import { chapterService } from "@/services/api";
 
 interface MangaReaderProps {
     manga: Manga;
@@ -41,14 +41,7 @@ export function MangaReader({ manga, chapter }: MangaReaderProps) {
         window.scrollTo(0, 0);
 
         // Increment view count
-        const incrementView = async () => {
-            try {
-                await fetchAPI(`/chapters/${chapter.id}/read`, {}, { method: 'POST' });
-            } catch (err) {
-                console.error("Failed to increment view", err);
-            }
-        };
-        incrementView();
+        chapterService.markAsRead(Number(chapter.id));
     }, [chapter.id]);
 
     return (

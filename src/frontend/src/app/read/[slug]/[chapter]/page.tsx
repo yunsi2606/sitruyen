@@ -1,6 +1,7 @@
 import { MangaReader } from "@/components/MangaReader";
 import { notFound } from "next/navigation";
-import { fetchAPI, getStrapiMedia } from "@/lib/api";
+import { getStrapiMedia } from "@/lib/api";
+import { chapterService } from "@/services/api";
 import { Manga, Chapter } from "@/types";
 import { Metadata } from "next";
 
@@ -17,17 +18,11 @@ interface Params {
 // Fetch chapter details
 async function getChapterData(slug: string, chapterSlug: string) {
     try {
-        // Fetch Chapter with images and related story
-        // Filter by chapter slug AND story slug to ensure correctness
-        const query = `?filters[slug][$eq]=${chapterSlug}&filters[story][slug][$eq]=${slug}&populate[images][fields][0]=url&populate[story][fields][0]=title&populate[story][fields][1]=slug&populate[story][populate][chapters][fields][0]=title&populate[story][populate][chapters][fields][1]=slug&populate[story][populate][chapters][fields][2]=chapter_number&populate[story][populate][chapters][sort][0]=chapter_number:desc`;
+        const item = await chapterService.getChapterWithDetails(slug, chapterSlug);
 
-        const response = await fetchAPI(`/chapters${query}`);
-
-        if (!response.data || response.data.length === 0) {
+        if (!item) {
             return null;
         }
-
-        const item = response.data[0];
         const attrs = item.attributes || item;
         const storyData = attrs.story?.data?.attributes || attrs.story;
 

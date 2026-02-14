@@ -2,7 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Play, BookOpen, Star, TrendingUp, Grid, List as ListIcon, Clock } from "lucide-react";
-import { fetchAPI, getStrapiMedia } from "@/lib/api"
+import { getStrapiMedia } from "@/lib/api";
+import { storyService } from "@/services/api";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ interface ContentItem {
 // Data Fetching
 async function getHomePageData() {
   try {
-    const result = await fetchAPI("/stories/homepage");
+    const result = await storyService.getHomepageStories();
     // Log data stats for debugging
     console.log(`HomePage: Hero ${result.heroSlider?.length}, Trending ${result.trending?.length}, Latest ${result.latest?.length}, Popular ${result.popular?.length}`);
     return result as {

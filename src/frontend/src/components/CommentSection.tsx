@@ -1,54 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { MessageSquare, Reply, Send, User, Loader2, MoreHorizontal, Trash2, Flag } from "lucide-react";
+import { MessageSquare, Reply, Send, Loader2, MoreHorizontal, Trash2, Flag } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { fetchAPI } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { commentService, storyService, chapterService, Comment } from "@/services/api";
 
 interface User {
     id: number;
     username: string;
     email: string;
-}
-
-interface Comment {
-    id: number;
-    attributes: {
-        content: string;
-        createdAt: string;
-        updatedAt: string;
-        user?: {
-            data?: {
-                id: number;
-                attributes: {
-                    username: string;
-                }
-            }
-        };
-        chapter?: {
-            data?: {
-                id: number;
-                attributes: {
-                    chapter_number: number; // or title/slug
-                    title: string;
-                    slug: string;
-                }
-            }
-        };
-        parent?: {
-            data?: {
-                id: number;
-            }
-        };
-        children?: {
-            data?: Comment[];
-        }
-    }
 }
 
 interface CommentSectionProps {
@@ -74,21 +36,13 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
 
     useEffect(() => {
         const fetchContextIds = async () => {
-            try {
-                if (storyId) {
-                    const res = await fetchAPI(`/stories?filters[id][$eq]=${storyId}`);
-                    if (res.data && res.data[0]) {
-                        setStoryDocumentId(res.data[0].documentId);
-                    }
-                }
-                if (chapterId) {
-                    const res = await fetchAPI(`/chapters?filters[id][$eq]=${chapterId}`);
-                    if (res.data && res.data[0]) {
-                        setChapterDocumentId(res.data[0].documentId);
-                    }
-                }
-            } catch (error) {
-                // Silent error
+            if (storyId) {
+                const docId = await storyService.getStoryDocumentId(storyId);
+                setStoryDocumentId(docId);
+            }
+            if (chapterId) {
+                const docId = await chapterService.getChapterDocumentId(chapterId);
+                setChapterDocumentId(docId);
             }
         };
         fetchContextIds();
@@ -108,24 +62,10 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
     const fetchComments = async () => {
         setLoading(true);
         try {
-            // Fetch comments with all relations
-            let query = `/comments?sort=createdAt:desc&populate[0]=user&populate[1]=chapter&populate[2]=parent`;
-
-            if (isChapterView) {
-                // Filter by chapter
-                query += `&filters[chapter][id][$eq]=${chapterId}`;
-            } else {
-                // Filter by story
-                query += `&filters[story][id][$eq]=${storyId}`;
-            }
-
-            // Pagination limit
-            query += `&pagination[limit]=100`;
-
-            const res = await fetchAPI(query);
-            if (res.data) {
-                setComments(res.data);
-            }
+            // Fetch comments using service (handles params internally)
+            // If chapterId is present, it filters by chapter. If not, by story.
+            const data = await commentService.getComments(storyId, chapterId);
+            setComments(data);
         } catch (err) {
             setError("Failed to load comments.");
         } finally {
@@ -181,14 +121,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                 }
             }
 
-            const res = await fetchAPI('/comments', {}, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}`,
-                },
-                body: JSON.stringify(payload)
-            });
+            const res = await commentService.createComment(payload, authToken);
 
             if (res.data) {
                 setNewComment("");
@@ -196,7 +129,6 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                 fetchComments();
             } else {
                 const msg = res.error?.message || res.error?.details?.errors?.[0]?.message || "Failed to post comment.";
-                // Specific hint for "Invalid key user"
                 if (msg.includes("Invalid key") && msg.includes("user")) {
                     setError("Server rejected 'user' field. Check backend permissions.");
                 } else {
@@ -210,12 +142,23 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
         }
     };
 
-    // Filter root comments and replies
+    // Reconstruct Tree (Basic 1-level nesting for simplicity or full recursion)
+    // Structure:
+    // - Root Comment
+    //   - Child
+    //   - Child
+    // Strapi response is flat. We filter roots (parent === null) and find children.
+
+    // Note: The schema has 'parent' as OneToOne which is concerning for multiple replies. 
+    // Assuming standard behavior (ManyToOne parent) for now. If OneToOne enforces uniqueness, replying will fail for 2nd person.
+
     const getParentId = (c: any) => c.parent?.id || c.parent?.data?.id || c.attributes?.parent?.data?.id;
     const getCreatedAt = (c: any) => c.createdAt || c.attributes?.createdAt;
 
+    // Filter Roots: No parent
     const rootComments = comments.filter(c => !getParentId(c));
 
+    // Get Replies
     const getReplies = (parentId: number) => {
         return comments.filter(c => getParentId(c) === parentId).sort((a: any, b: any) =>
             new Date(getCreatedAt(a)).getTime() - new Date(getCreatedAt(b)).getTime()

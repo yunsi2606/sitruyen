@@ -7,7 +7,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Star, Clock, ListChecks, Play, BookOpen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils"; // assuming cn utility available or inline
-import { fetchAPI, getStrapiMedia } from "@/lib/api";
+import { getStrapiMedia } from "@/lib/api";
+import { storyService } from "@/services/api";
 import { Manga, Chapter } from "@/types";
 
 interface Params {
@@ -19,18 +20,13 @@ interface Params {
 // Helper to fetch manga by slug
 async function getManga(slug: string): Promise<Manga | null> {
     try {
-        // Fetch fields and relations
-        const query = `?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[categories][fields][1]=slug&populate[chapters][sort][0]=chapter_number:desc`;
+        const item = await storyService.getBySlug(slug);
 
-        console.log(`Fetching manga with slug: ${slug}, Query: ${query}`);
-        const response = await fetchAPI(`/stories${query}`);
-
-        if (!response.data || response.data.length === 0) {
+        if (!item) {
             console.log("No manga found for slug:", slug);
             return null;
         }
 
-        const item = response.data[0];
         const attributes = item.attributes || item;
 
         // Debug logging enabled to verify data

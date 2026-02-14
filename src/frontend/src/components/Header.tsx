@@ -6,7 +6,7 @@ import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Sta
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
-import { fetchAPI } from "@/lib/api";
+import { categoryService } from "@/services/api";
 
 export function Header() {
     const { theme, setTheme } = useTheme();
@@ -21,8 +21,8 @@ export function Header() {
             setUser(currentUser);
 
             try {
-                const res = await fetchAPI('/categories?sort=name:asc&pagination[limit]=16');
-                if (res.data) setGenres(res.data);
+                const data = await categoryService.getAll(16);
+                setGenres(data);
             } catch (err) {
                 console.error("Failed to load header genres", err);
             }

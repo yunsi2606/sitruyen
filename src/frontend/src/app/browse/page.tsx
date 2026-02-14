@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { fetchAPI, getStrapiMedia } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
+import { categoryService, storyService } from '@/services/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Clock, Filter, ChevronDown, List, Grid, Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -43,8 +44,8 @@ export default function BrowsePage() {
     useEffect(() => {
         const fetchGenres = async () => {
             try {
-                const res = await fetchAPI('/categories?sort=name:asc&pagination[limit]=100');
-                if (res.data) setGenres(res.data);
+                const data = await categoryService.getAll(100);
+                setGenres(data);
             } catch (err) {
                 console.error("Failed to fetch genres", err);
             }
@@ -75,7 +76,7 @@ export default function BrowsePage() {
                     query += `&filters[title][$containsi]=${searchQuery}`;
                 }
 
-                const res = await fetchAPI(query);
+                const res = await storyService.search(query);
 
                 if (res.data) {
                     const formatted: Manga[] = res.data.map((item: any) => {
