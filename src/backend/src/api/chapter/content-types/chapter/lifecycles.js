@@ -1,19 +1,25 @@
 const slugify = require('slugify');
 
+strapi.log.info('[Chapter Lifecycle] Loaded');
+
 module.exports = {
     async beforeCreate(event) {
         const { data } = event.params;
+        strapi.log.info(`[Chapter Lifecycle] beforeCreate triggered. Data: ${JSON.stringify(data)}`);
 
         if (data.title && !data.slug) {
             data.slug = slugify(data.title, { lower: true, strict: true });
+            strapi.log.info(`[Chapter Lifecycle] Generated slug: ${data.slug}`);
         }
     },
 
     async beforeUpdate(event) {
         const { data } = event.params;
+        strapi.log.info(`[Chapter Lifecycle] beforeUpdate triggered. Data: ${JSON.stringify(data)}`);
 
         if (data.title && !data.slug) {
             data.slug = slugify(data.title, { lower: true, strict: true });
+            strapi.log.info(`[Chapter Lifecycle] Generated slug (Update): ${data.slug}`);
         }
     },
 
