@@ -1,5 +1,6 @@
 
 import { ChapterList } from "@/components/ChapterList";
+import { CommentSection } from "@/components/CommentSection";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -200,9 +201,11 @@ export default async function MangaDetail(props: Params) {
                     </div>
                 </div>
             </div>
+
+            {/* Comments Section */}
+            <div className="border-t border-white/10 pt-16">
+                <CommentSection storyId={Number(manga.id)} />
+            </div>
         </div>
     );
 }
-
-// Simple cn utility if missing in lib/utils or to ensure this file works standalone
-// But standard imports usually mean it exists. If it fails, I'll fix it.

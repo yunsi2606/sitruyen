@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-
+import { CommentSection } from "@/components/CommentSection";
 import { ReaderControls } from "@/components/ReaderControls";
 import { fetchAPI } from "@/lib/api";
 
@@ -106,6 +106,11 @@ export function MangaReader({ manga, chapter }: MangaReaderProps) {
                         <p className="text-muted-foreground">Pagination mode coming soon.</p>
                     </div>
                 )}
+            </div>
+
+            {/* Comments Section */}
+            <div className="w-full max-w-[900px] mx-auto px-4 py-8 mb-20 animate-in fade-in-up duration-500">
+                <CommentSection storyId={Number(manga.id)} chapterId={Number(chapter.id)} />
             </div>
 
             {/* Footer Navigation */}

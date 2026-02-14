@@ -83,7 +83,7 @@ export function Header() {
                                     </div>
                                 </div>
 
-                                /* Middle: Quick Lists */
+                                {/* Middle: Quick Lists */}
                                 <div className="col-span-4 space-y-6 border-l border-white/10 pl-6">
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
