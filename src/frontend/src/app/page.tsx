@@ -1,7 +1,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Play, BookOpen, Star, TrendingUp, Grid, List as ListIcon, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, TrendingUp, Grid, List as ListIcon, Clock } from "lucide-react";
+import { HeroSlider } from "@/components/HeroSlider";
 import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
 
@@ -120,62 +121,7 @@ export default async function HomePage() {
 
         {/* HERO SECTION */}
         {heroSlider && heroSlider.length > 0 && (
-          <section className="relative w-full max-w-[1280px] mx-auto px-6 pt-8 pb-12 section-gap animate-in fade-in duration-700">
-            {/* Hero Slider */}
-            <div className="relative w-full h-[420px] rounded-3xl overflow-hidden bg-surface shadow-2xl group ring-1 ring-white/5">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/90 to-transparent z-10" />
-              <div className="absolute inset-0 z-0">
-                <Image
-                  src={getStrapiMedia(heroSlider[0].cover?.url || null) || "https://placehold.co/1280x720/png?text=No+Image"}
-                  alt="Hero BG"
-                  fill
-                  className="object-cover opacity-50 blur-sm"
-                  priority
-                />
-              </div>
-
-              <div className="relative z-20 flex items-center h-full px-8 md:px-12 gap-8 md:gap-16">
-                <div className="hidden md:block flex-shrink-0 w-[260px] h-[360px] relative rounded-xl shadow-lg shadow-black/50 overflow-hidden transform hover:scale-105 transition-transform duration-500">
-                  <Image
-                    src={getStrapiMedia(heroSlider[0].cover?.url || null) || "https://placehold.co/600x900"}
-                    alt={heroSlider[0].title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-
-                <div className="flex-1 space-y-6 max-w-2xl">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-accent text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg shadow-accent/25 animate-pulse">
-                      Featured
-                    </span>
-                    <span className="flex items-center gap-1 text-yellow-500 font-bold text-sm">
-                      <Star className="w-4 h-4 fill-current" /> 4.9
-                    </span>
-                  </div>
-
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tight drop-shadow-sm line-clamp-2">
-                    {heroSlider[0].title}
-                  </h1>
-
-                  <p className="text-muted text-base md:text-lg line-clamp-3 leading-relaxed max-w-xl drop-shadow-md">
-                    {/* Description */}
-                    Discover this amazing story today. Read the latest chapters and join the community.
-                  </p>
-
-                  <div className="flex flex-wrap gap-4 pt-4">
-                    <Link href={`/manga/${heroSlider[0].slug}`} className="flex items-center gap-2 px-8 py-3 bg-accent text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all">
-                      <Play className="w-5 h-5 fill-current" /> Read Now
-                    </Link>
-                    <Link href={`/manga/${heroSlider[0].slug}`} className="flex items-center gap-2 px-8 py-3 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
-                      <BookOpen className="w-5 h-5" /> View Info
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <HeroSlider items={heroSlider} />
         )}
 
         {/* TRENDING SECTION */}
