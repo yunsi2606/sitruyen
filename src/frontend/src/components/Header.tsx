@@ -6,15 +6,28 @@ import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Sta
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
+import { fetchAPI } from "@/lib/api";
 
 export function Header() {
     const { theme, setTheme } = useTheme();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [genres, setGenres] = useState<any[]>([]);
 
     useEffect(() => {
-        const currentUser = auth.getUser();
-        setUser(currentUser);
+        // Fetch User and Genres
+        const initData = async () => {
+            const currentUser = auth.getUser();
+            setUser(currentUser);
+
+            try {
+                const res = await fetchAPI('/categories?sort=name:asc&pagination[limit]=16');
+                if (res.data) setGenres(res.data);
+            } catch (err) {
+                console.error("Failed to load header genres", err);
+            }
+        };
+        initData();
     }, []);
 
     return (
@@ -33,8 +46,8 @@ export function Header() {
                     {/* Desktop Nav */}
                     <nav className="hidden lg:flex items-center gap-8 text-sm font-medium text-muted hover:text-white transition-colors">
                         <Link href="/" className="hover:text-accent focus:text-accent focus:outline-none focus:ring-1 focus:ring-accent rounded px-2 py-1 transition-colors">Home</Link>
-                        <Link href="/latest" className="hover:text-accent focus:text-accent focus:outline-none focus:ring-1 focus:ring-accent rounded px-2 py-1 transition-colors">Latest</Link>
-                        <Link href="/popular" className="hover:text-accent focus:text-accent focus:outline-none focus:ring-1 focus:ring-accent rounded px-2 py-1 transition-colors">Popular</Link>
+                        <Link href="/browse?sort=updatedAt:desc" className="hover:text-accent focus:text-accent focus:outline-none focus:ring-1 focus:ring-accent rounded px-2 py-1 transition-colors">Latest</Link>
+                        <Link href="/browse?sort=view_count:desc" className="hover:text-accent focus:text-accent focus:outline-none focus:ring-1 focus:ring-accent rounded px-2 py-1 transition-colors">Popular</Link>
 
                         {/* Mega Dropdown Trigger */}
                         <div className="relative group/genres">
@@ -55,18 +68,18 @@ export function Header() {
                                         <List className="w-4 h-4 text-accent" /> Popular Genres
                                     </h4>
                                     <div className="grid grid-cols-4 gap-3">
-                                        {['Action', 'Adventure', 'Fantasy', 'Romance', 'Comedy', 'Drama', 'Horror', 'Mystery', 'Sci-Fi', 'Slice of Life', 'Isekai', 'Shounen'].map(genre => (
+                                        {genres.slice(0, 16).map((genre: any) => (
                                             <Link
-                                                key={genre}
-                                                href={`/genre/${genre.toLowerCase()}`}
-                                                className="px-3 py-2 rounded-lg bg-white/5 hover:bg-accent/10 hover:text-accent text-sm text-center transition-colors border border-transparent hover:border-accent/20 focus:ring-2 focus:ring-accent focus:outline-none"
+                                                key={genre.id}
+                                                href={`/browse?genre=${genre.attributes?.slug || genre.slug}`}
+                                                className="px-3 py-2 rounded-lg bg-white/5 hover:bg-accent/10 hover:text-accent text-sm text-center transition-colors border border-transparent hover:border-accent/20 focus:ring-2 focus:ring-accent focus:outline-none truncate"
                                             >
-                                                {genre}
+                                                {genre.attributes?.name || genre.name}
                                             </Link>
                                         ))}
                                     </div>
                                     <div className="mt-4 pt-4 border-t border-white/10 text-center">
-                                        <Link href="/genres" className="text-xs font-semibold text-accent hover:underline">View All Genres →</Link>
+                                        <Link href="/browse" className="text-xs font-semibold text-accent hover:underline">View All Genres →</Link>
                                     </div>
                                 </div>
 
@@ -77,9 +90,9 @@ export function Header() {
                                             <Zap className="w-4 h-4 text-yellow-400" /> Quick Access
                                         </h4>
                                         <ul className="space-y-2 text-sm text-muted">
-                                            <li><Link href="/top-week" className="hover:text-white transition-colors flex items-center justify-between group">Top this week <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
-                                            <li><Link href="/new-releases" className="hover:text-white transition-colors flex items-center justify-between group">New Releases <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
-                                            <li><Link href="/completed" className="hover:text-white transition-colors flex items-center justify-between group">Completed Series <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
+                                            <li><Link href="/browse?sort=view_count:desc&from=week" className="hover:text-white transition-colors flex items-center justify-between group">Top this week <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
+                                            <li><Link href="/browse?sort=createdAt:desc" className="hover:text-white transition-colors flex items-center justify-between group">New Releases <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
+                                            <li><Link href="/browse?status=Completed" className="hover:text-white transition-colors flex items-center justify-between group">Completed Series <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span></Link></li>
                                         </ul>
                                     </div>
                                     <div>

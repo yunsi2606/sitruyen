@@ -58,10 +58,10 @@ const FooterSkeleton = () => (
         <div>
           <h4 className="text-white font-bold mb-6">Discover</h4>
           <ul className="space-y-3 text-sm text-muted">
-            <li><Link href="/latest" className="hover:text-accent transition-colors">Latest Updates</Link></li>
-            <li><Link href="/popular" className="hover:text-accent transition-colors">Most Popular</Link></li>
-            <li><Link href="/new" className="hover:text-accent transition-colors">New Arrivals</Link></li>
-            <li><Link href="/completed" className="hover:text-accent transition-colors">Completed Series</Link></li>
+            <li><Link href="/browse?sort=updatedAt:desc" className="hover:text-accent transition-colors">Latest Updates</Link></li>
+            <li><Link href="/browse?sort=view_count:desc" className="hover:text-accent transition-colors">Most Popular</Link></li>
+            <li><Link href="/browse?sort=createdAt:desc" className="hover:text-accent transition-colors">New Arrivals</Link></li>
+            <li><Link href="/browse?status=Completed" className="hover:text-accent transition-colors">Completed Series</Link></li>
           </ul>
         </div>
 
@@ -227,7 +227,7 @@ export default async function HomePage() {
                 Updated: Just Now
               </span>
             </div>
-            <Link href="/latest" className="text-sm font-semibold text-accent hover:text-white transition-colors flex items-center gap-1 group">
+            <Link href="/browse?sort=updatedAt:desc" className="text-sm font-semibold text-accent hover:text-white transition-colors flex items-center gap-1 group">
               View All <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
