@@ -37,6 +37,11 @@
       "relation": "manyToOne",
       "target": "api::story.story",
       "inversedBy": "comments"
+    },
+    "sticker": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sticker.sticker"
     }
   }
 }

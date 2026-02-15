@@ -19,6 +19,7 @@ export interface Comment {
     parent?: any;
     children?: any;
     story?: any;
+    sticker?: any;
     // v4 fallback
     attributes?: any;
 }
@@ -36,9 +37,8 @@ export interface CreateCommentPayload {
 }
 
 export const commentService = {
-    // Get list of comments
-    async getComments(storyId?: number, chapterId?: number, limit = 100): Promise<Comment[]> {
-        let query = `/comments?sort=createdAt:desc&populate[0]=user&populate[1]=chapter&populate[2]=parent`;
+    async getComments(storyId?: number, chapterId?: number, limit = 100, token?: string | null): Promise<Comment[]> {
+        let query = `/comments?sort=createdAt:desc&populate[user][fields][0]=username&populate[chapter][fields][0]=chapter_number&populate[chapter][fields][1]=slug&populate[chapter][fields][2]=title&populate[parent][populate][user][fields][0]=username&populate[sticker][populate][file][fields][0]=url&populate[sticker][populate][file][fields][1]=mime&populate[sticker][populate][file][fields][2]=width&populate[sticker][populate][file][fields][3]=height&populate[sticker][fields][0]=name&populate[sticker][fields][1]=duration&populate[sticker][fields][2]=id&populate[sticker][fields][3]=documentId&populate[story][fields][0]=slug`;
 
         if (chapterId) {
             query += `&filters[chapter][id][$eq]=${chapterId}`;
@@ -49,7 +49,11 @@ export const commentService = {
         query += `&pagination[limit]=${limit}`;
 
         try {
-            const res = await fetchAPI(query);
+            const options: any = {};
+            if (token) {
+                options.headers = { Authorization: `Bearer ${token}` };
+            }
+            const res = await fetchAPI(query, {}, options);
             return res.data || [];
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -252,6 +256,28 @@ export const categoryService = {
             return res.data || [];
         } catch (error) {
             console.error("Error fetching categories:", error);
+            return [];
+        }
+    }
+};
+
+// Sticker Service (Animation/Lottie)
+export const stickerService = {
+    // Get all sticker packs with full details
+    async getStickerPacks(token?: string | null): Promise<any[]> {
+        try {
+            // Populate: internal stickers, their media files, and pack icon
+            const query = `/sticker-packs?populate[stickers][populate][file][fields][0]=url&populate[stickers][populate][file][fields][1]=width&populate[stickers][populate][file][fields][2]=height&populate[stickers][populate][file][fields][3]=mime&populate[stickers][fields][0]=name&populate[stickers][fields][1]=duration&populate[stickers][fields][2]=documentId&populate[stickers][fields][3]=id&populate[icon][fields][0]=url`;
+
+            const options: any = {};
+            if (token) {
+                options.headers = { Authorization: `Bearer ${token}` };
+            }
+
+            const res = await fetchAPI(query, {}, options);
+            return res.data || [];
+        } catch (error) {
+            console.error("Error fetching stickers:", error);
             return [];
         }
     }

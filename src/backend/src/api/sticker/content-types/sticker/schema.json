@@ -1,0 +1,41 @@
+{
+    "kind": "collectionType",
+    "collectionName": "stickers",
+    "info": {
+        "singularName": "sticker",
+        "pluralName": "stickers",
+        "displayName": "Sticker",
+        "description": "Small animation or image"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "file": {
+            "type": "media",
+            "multiple": false,
+            "required": true,
+            "allowedTypes": [
+                "images",
+                "files",
+                "videos",
+                "audios"
+            ]
+        },
+        "duration": {
+            "type": "decimal",
+            "default": 1.0
+        },
+        "pack": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::sticker-pack.sticker-pack",
+            "inversedBy": "stickers"
+        }
+    }
+}

@@ -570,7 +570,7 @@ export interface ApiChapterChapter extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::reading-history.reading-history'
     >;
-    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    slug: Schema.Attribute.String;
     story: Schema.Attribute.Relation<'manyToOne', 'api::story.story'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -604,6 +604,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     parent: Schema.Attribute.Relation<'oneToOne', 'api::comment.comment'>;
     publishedAt: Schema.Attribute.DateTime;
+    sticker: Schema.Attribute.Relation<'manyToOne', 'api::sticker.sticker'>;
     story: Schema.Attribute.Relation<'manyToOne', 'api::story.story'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -723,6 +724,74 @@ export interface ApiReadingHistoryReadingHistory
   };
 }
 
+export interface ApiStickerPackStickerPack extends Struct.CollectionTypeSchema {
+  collectionName: 'sticker_packs';
+  info: {
+    description: 'Collection of stickers';
+    displayName: 'Sticker Pack';
+    pluralName: 'sticker-packs';
+    singularName: 'sticker-pack';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sticker-pack.sticker-pack'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    stickers: Schema.Attribute.Relation<'oneToMany', 'api::sticker.sticker'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiStickerSticker extends Struct.CollectionTypeSchema {
+  collectionName: 'stickers';
+  info: {
+    description: 'Small animation or image';
+    displayName: 'Sticker';
+    pluralName: 'stickers';
+    singularName: 'sticker';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    duration: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<1>;
+    file: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sticker.sticker'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    pack: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sticker-pack.sticker-pack'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiStoryStory extends Struct.CollectionTypeSchema {
   collectionName: 'stories';
   info: {
@@ -748,6 +817,8 @@ export interface ApiStoryStory extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Blocks;
     follow_count: Schema.Attribute.Integer;
     follows: Schema.Attribute.Relation<'oneToMany', 'api::follow.follow'>;
+    is_featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    is_trending: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::story.story'> &
       Schema.Attribute.Private;
@@ -1329,6 +1400,8 @@ declare module '@strapi/strapi' {
       'api::follow.follow': ApiFollowFollow;
       'api::rating.rating': ApiRatingRating;
       'api::reading-history.reading-history': ApiReadingHistoryReadingHistory;
+      'api::sticker-pack.sticker-pack': ApiStickerPackStickerPack;
+      'api::sticker.sticker': ApiStickerSticker;
       'api::story.story': ApiStoryStory;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;

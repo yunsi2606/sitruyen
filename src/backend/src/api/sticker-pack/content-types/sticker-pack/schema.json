@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sticker_packs",
+  "info": {
+    "singularName": "sticker-pack",
+    "pluralName": "sticker-packs",
+    "displayName": "Sticker Pack",
+    "description": "Collection of stickers"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images", "files", "videos", "audios"]
+    },
+    "stickers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sticker.sticker",
+      "mappedBy": "pack"
+    }
+  }
+}
