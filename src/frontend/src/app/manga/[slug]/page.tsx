@@ -63,7 +63,8 @@ async function getManga(slug: string): Promise<Manga | null> {
                         number: attrs.chapter_number,
                         view_count: attrs.view_count ? Number(attrs.view_count) : 0,
                         pages: [], // Not needed for list
-                        createdAt: attrs.createdAt
+                        createdAt: attrs.createdAt,
+                        is_vip_only: attrs.is_vip_only
                     };
                 }) || []
         };

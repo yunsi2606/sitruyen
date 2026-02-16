@@ -56,6 +56,10 @@
     },
     "chap_published_at": {
       "type": "date"
+    },
+    "is_vip_only": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

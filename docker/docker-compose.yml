@@ -28,6 +28,11 @@ services:
       DATABASE_POOL_MIN: ${DATABASE_POOL_MIN:-2}
       DATABASE_POOL_MAX: ${DATABASE_POOL_MAX:-10}
       NODE_ENV: ${NODE_ENV:-production}
+      SEPAY_BANK_ID: ${SEPAY_BANK_ID:-BIDV}
+      SEPAY_ACCOUNT_NUMBER: ${SEPAY_ACCOUNT_NUMBER}
+      SEPAY_ACCOUNT_NAME: ${SEPAY_ACCOUNT_NAME:-SITRUYEN}
+      SEPAY_WEBHOOK_SECRET: ${SEPAY_WEBHOOK_SECRET}
+      SEPAY_PREFIX: ${SEPAY_PREFIX:-ST}
     volumes:
       - strapi_uploads:/app/public/uploads
     networks:

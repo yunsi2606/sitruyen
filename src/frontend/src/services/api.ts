@@ -141,9 +141,20 @@ export const chapterService = {
     },
 
     // Get chapter with details (images, story, siblings)
-    async getChapterWithDetails(storySlug: string, chapterSlug: string): Promise<any> {
+    async getChapterWithDetails(storySlug: string, chapterSlug: string, token?: string | null): Promise<any> {
         const query = `?filters[slug][$eq]=${chapterSlug}&filters[story][slug][$eq]=${storySlug}&populate[images][fields][0]=url&populate[story][fields][0]=title&populate[story][fields][1]=slug&populate[story][populate][chapters][fields][0]=title&populate[story][populate][chapters][fields][1]=slug&populate[story][populate][chapters][fields][2]=chapter_number&populate[story][populate][chapters][sort][0]=chapter_number:desc`;
-        const res = await fetchAPI(`/chapters${query}`);
+
+        const options: any = {};
+        if (token) {
+            options.headers = { Authorization: `Bearer ${token}` };
+        }
+
+        const res = await fetchAPI(`/chapters${query}`, {}, options);
+
+        if (res.error) {
+            throw new Error(res.error.message || "Failed to fetch chapter");
+        }
+
         return res.data?.[0] || null;
     }
 };
@@ -281,4 +292,39 @@ export const stickerService = {
             return [];
         }
     }
+};
+
+// VIP Order Service
+export const vipOrderService = {
+    /**
+     * Create a new VIP order. Requires auth token.
+     * Returns order details + bank transfer QR info.
+     */
+    async createOrder(plan: string, token: string) {
+        const res = await fetchAPI('/vip-orders/create', {}, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ plan }),
+        });
+
+        if (res.error) {
+            throw new Error(res.error.message || 'Failed to create order');
+        }
+        return res;
+    },
+
+    /**
+     * Poll order status by order code.
+     * Returns { status: 'pending' | 'paid' | 'expired' | 'cancelled', paid_at }
+     */
+    async checkStatus(orderCode: string) {
+        const res = await fetchAPI(`/vip-orders/check/${orderCode}`);
+        if (res.error) {
+            throw new Error(res.error.message || 'Failed to check status');
+        }
+        return res;
+    },
 };

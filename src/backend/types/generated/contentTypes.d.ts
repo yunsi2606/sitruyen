@@ -559,6 +559,7 @@ export interface ApiChapterChapter extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     images: Schema.Attribute.Media<'images', true>;
+    is_vip_only: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -868,6 +869,54 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVipOrderVipOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'vip_orders';
+  info: {
+    description: 'Tracks VIP subscription purchases via bank transfer';
+    displayName: 'VIP Order';
+    pluralName: 'vip-orders';
+    singularName: 'vip-order';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.Integer & Schema.Attribute.Required;
+    buyer: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    duration_days: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<30>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::vip-order.vip-order'
+    > &
+      Schema.Attribute.Private;
+    note: Schema.Attribute.Text;
+    order_code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    paid_at: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    sepay_reference: Schema.Attribute.String;
+    sepay_transaction_id: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'expired', 'cancelled']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1357,6 +1406,8 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    plan: Schema.Attribute.Enumeration<['free', 'vip']> &
+      Schema.Attribute.DefaultTo<'free'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     ratings: Schema.Attribute.Relation<'oneToMany', 'api::rating.rating'>;
@@ -1378,6 +1429,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 3;
       }>;
+    vip_expired_at: Schema.Attribute.DateTime;
   };
 }
 
@@ -1404,6 +1456,7 @@ declare module '@strapi/strapi' {
       'api::sticker.sticker': ApiStickerSticker;
       'api::story.story': ApiStoryStory;
       'api::tag.tag': ApiTagTag;
+      'api::vip-order.vip-order': ApiVipOrderVipOrder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

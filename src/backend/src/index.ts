@@ -27,6 +27,13 @@ export default {
         if (data.title && !data.slug) {
           data.slug = slugify(data.title, { lower: true, strict: true });
         }
+        // Auto-set publish date and VIP lock for new chapters
+        if (!data.chap_published_at) {
+          data.chap_published_at = new Date().toISOString().split('T')[0];
+        }
+        if (data.is_vip_only === undefined || data.is_vip_only === null) {
+          data.is_vip_only = true;
+        }
       },
 
       async beforeUpdate(event) {

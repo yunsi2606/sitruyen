@@ -1,0 +1,58 @@
+{
+    "kind": "collectionType",
+    "collectionName": "vip_orders",
+    "info": {
+        "singularName": "vip-order",
+        "pluralName": "vip-orders",
+        "displayName": "VIP Order",
+        "description": "Tracks VIP subscription purchases via bank transfer"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "order_code": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "amount": {
+            "type": "integer",
+            "required": true
+        },
+        "duration_days": {
+            "type": "integer",
+            "required": true,
+            "default": 30
+        },
+        "status": {
+            "type": "enumeration",
+            "enum": [
+                "pending",
+                "paid",
+                "expired",
+                "cancelled"
+            ],
+            "default": "pending",
+            "required": true
+        },
+        "paid_at": {
+            "type": "datetime"
+        },
+        "sepay_transaction_id": {
+            "type": "string"
+        },
+        "sepay_reference": {
+            "type": "string"
+        },
+        "buyer": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user"
+        },
+        "note": {
+            "type": "text"
+        }
+    }
+}

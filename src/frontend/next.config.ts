@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'api-sitruyen.nhatcuong.io.vn',
       },
+      {
+        protocol: 'https',
+        hostname: 'qr.sepay.vn',
+      },
     ],
   },
 };

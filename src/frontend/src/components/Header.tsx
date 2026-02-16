@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import Link from 'next/link';
-import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Star, LogOut } from "lucide-react";
+import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Star, LogOut, Crown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
@@ -126,8 +126,16 @@ export function Header() {
                         <Moon className="w-5 h-5 block dark:hidden" />
                     </button>
 
+                    {/* VIP Upsell */}
+                    {(!user || user.plan !== 'vip') && (
+                        <Link href="/vip-upgrade" className="hidden md:flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-600/90 to-yellow-500/90 hover:from-yellow-500 hover:to-yellow-400 text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/30 transition-all hover:-translate-y-0.5 border border-yellow-400/20">
+                            <Crown className="w-3.5 h-3.5 fill-white/20" />
+                            Go Premium
+                        </Link>
+                    )}
+
                     {/* Auth / Avatar */}
-                    <div className="flex items-center gap-3 pl-2 border-l border-white/10">
+                    <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-2">
                         <button className="hidden sm:flex items-center justify-center p-2 rounded-full hover:bg-white/10 relative text-muted hover:text-white transition-colors">
                             <Bell className="w-5 h-5" />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full border-2 border-surface animate-pulse"></span>

@@ -88,6 +88,17 @@
       "relation": "oneToMany",
       "target": "api::reading-history.reading-history",
       "mappedBy": "user"
+    },
+    "plan": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "vip"
+      ],
+      "default": "free"
+    },
+    "vip_expired_at": {
+      "type": "datetime"
     }
   }
 }

@@ -19,6 +19,18 @@ export interface Chapter {
     view_count?: number;
     pages: string[]; // URLs
     createdAt: string;
+    is_vip_only?: boolean;
+}
+
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+    plan: "free" | "vip";
+    vip_expired_at?: string;
+    blocked: boolean;
+    confirmed: boolean;
+    createdAt: string;
 }
 
 export type ReadingMode = "vertical" | "paginated";
