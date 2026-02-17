@@ -26,15 +26,27 @@ export function ReportModal({ isOpen, onClose, locationContext }: ReportModalPro
         return () => setMounted(false);
     }, []);
 
-    // Prevent scrolling when modal is open
+    // Prevent scrolling and Handle Escape key
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "unset";
         }
-        return () => { document.body.style.overflow = "unset"; };
-    }, [isOpen]);
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" || e.key === "Esc") {
+                onClose();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = "unset";
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isOpen, onClose]);
 
     if (!mounted || !isOpen) return null;
 
