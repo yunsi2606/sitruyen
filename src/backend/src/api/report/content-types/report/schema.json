@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reports",
+  "info": {
+    "singularName": "report",
+    "pluralName": "reports",
+    "displayName": "Report",
+    "description": "User feedback and error reports"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "image_broken",
+        "wrong_content",
+        "translation_issue",
+        "website_bug",
+        "vip_issue",
+        "other"
+      ],
+      "default": "image_broken",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "location_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "investigating",
+        "resolved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "contact_email": {
+      "type": "email"
+    },
+    "reporter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reports"
+    }
+  }
+}

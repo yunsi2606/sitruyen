@@ -725,6 +725,58 @@ export interface ApiReadingHistoryReadingHistory
   };
 }
 
+export interface ApiReportReport extends Struct.CollectionTypeSchema {
+  collectionName: 'reports';
+  info: {
+    description: 'User feedback and error reports';
+    displayName: 'Report';
+    pluralName: 'reports';
+    singularName: 'report';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    contact_email: Schema.Attribute.Email;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::report.report'
+    > &
+      Schema.Attribute.Private;
+    location_url: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    reporter: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'investigating', 'resolved', 'rejected']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<
+      [
+        'image_broken',
+        'wrong_content',
+        'translation_issue',
+        'website_bug',
+        'vip_issue',
+        'other',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'image_broken'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiStickerPackStickerPack extends Struct.CollectionTypeSchema {
   collectionName: 'sticker_packs';
   info: {
@@ -1415,6 +1467,7 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::reading-history.reading-history'
     >;
+    reports: Schema.Attribute.Relation<'oneToMany', 'api::report.report'>;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
@@ -1452,6 +1505,7 @@ declare module '@strapi/strapi' {
       'api::follow.follow': ApiFollowFollow;
       'api::rating.rating': ApiRatingRating;
       'api::reading-history.reading-history': ApiReadingHistoryReadingHistory;
+      'api::report.report': ApiReportReport;
       'api::sticker-pack.sticker-pack': ApiStickerPackStickerPack;
       'api::sticker.sticker': ApiStickerSticker;
       'api::story.story': ApiStoryStory;

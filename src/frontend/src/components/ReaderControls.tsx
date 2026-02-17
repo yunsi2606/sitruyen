@@ -1,9 +1,10 @@
 "use client";
 
 import { Chapter } from "@/types";
-import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Settings, Flag } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ReportModal } from "./ReportModal";
 
 interface ReaderControlsProps {
     currentChapter: Chapter;
@@ -18,6 +19,7 @@ export function ReaderControls({ currentChapter, chapters, mangaSlug, onModeChan
     const prevChapter = chapters[currentIndex - 1];
     const nextChapter = chapters[currentIndex + 1];
     const [showSettings, setShowSettings] = useState(false);
+    const [showReport, setShowReport] = useState(false);
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-t border-border p-4 flex items-center justify-between shadow-[0_-5px_10px_rgba(0,0,0,0.1)] transition-transform duration-300">
@@ -42,6 +44,14 @@ export function ReaderControls({ currentChapter, chapters, mangaSlug, onModeChan
             </div>
 
             <div className="relative">
+                <button
+                    onClick={() => setShowReport(true)}
+                    className="p-2 rounded-full hover:bg-surface transition-colors"
+                    title="Report Issue"
+                >
+                    <Flag className="h-5 w-5 text-secondary hover:text-red-400 transition-colors" />
+                </button>
+
                 <button
                     onClick={() => setShowSettings(!showSettings)}
                     className="p-2 rounded-full hover:bg-surface transition-colors"
@@ -68,6 +78,12 @@ export function ReaderControls({ currentChapter, chapters, mangaSlug, onModeChan
                     </div>
                 )}
             </div>
+
+            <ReportModal
+                isOpen={showReport}
+                onClose={() => setShowReport(false)}
+                locationContext={`Chapter: ${currentChapter.title}`}
+            />
         </div>
     );
 }
