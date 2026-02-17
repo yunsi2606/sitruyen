@@ -48,7 +48,7 @@ async function getChapterData(slug: string, chapterSlug: string) {
             pages: [],
             createdAt: c.attributes?.createdAt || c.createdAt,
             is_vip_only: c.attributes?.is_vip_only || c.is_vip_only
-        })).sort((a: any, b: any) => b.number - a.number);
+        })).sort((a: any, b: any) => a.number - b.number);
 
         return {
             manga: {
