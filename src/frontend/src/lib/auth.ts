@@ -40,8 +40,11 @@ export const auth = {
             });
 
             if (data.jwt) {
-                setCookie("token", data.jwt, 30); // 30 days
-                setCookie("user", JSON.stringify(data.user), 30);
+                if (typeof window !== "undefined") {
+                    setCookie("token", data.jwt, 30); // 30 days
+                    setCookie("user", JSON.stringify(data.user), 30);
+                    window.dispatchEvent(new Event("auth:change"));
+                }
                 return { success: true, user: data.user };
             } else {
                 return { success: false, error: data.error?.message || "Login failed" };
@@ -64,8 +67,11 @@ export const auth = {
             });
 
             if (data.jwt) {
-                setCookie("token", data.jwt, 30);
-                setCookie("user", JSON.stringify(data.user), 30);
+                if (typeof window !== "undefined") {
+                    setCookie("token", data.jwt, 30);
+                    setCookie("user", JSON.stringify(data.user), 30);
+                    window.dispatchEvent(new Event("auth:change"));
+                }
                 return { success: true, user: data.user };
             } else {
                 return { success: false, error: data.error?.message || "Registration failed" };
@@ -79,8 +85,8 @@ export const auth = {
     logout() {
         deleteCookie("token");
         deleteCookie("user");
-        // Optional: Redirect or reload
         if (typeof window !== "undefined") {
+            window.dispatchEvent(new Event("auth:change"));
             window.location.href = "/login";
         }
     },

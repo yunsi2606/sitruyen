@@ -28,6 +28,14 @@ export function Header() {
             }
         };
         initData();
+
+        // Listen for Auth Changes (Login/Logout)
+        const handleAuthChange = () => {
+            const currentUser = auth.getUser();
+            setUser(currentUser);
+        };
+        window.addEventListener("auth:change", handleAuthChange);
+        return () => window.removeEventListener("auth:change", handleAuthChange);
     }, []);
 
     return (
