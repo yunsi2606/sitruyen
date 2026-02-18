@@ -132,9 +132,13 @@ export const chapterService = {
     },
 
     // Mark chapter as read
-    async markAsRead(chapterId: number): Promise<void> {
+    async markAsRead(chapterId: number, token?: string | null): Promise<void> {
         try {
-            await fetchAPI(`/chapters/${chapterId}/read`, {}, { method: 'POST' });
+            const options: any = { method: 'POST' };
+            if (token) {
+                options.headers = { Authorization: `Bearer ${token}` };
+            }
+            await fetchAPI(`/chapters/${chapterId}/read`, {}, options);
         } catch (error) {
             console.error(`Error marking chapter ${chapterId} as read:`, error);
         }

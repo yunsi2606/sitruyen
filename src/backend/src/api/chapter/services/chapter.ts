@@ -87,18 +87,19 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
             const storyDocId = chapter.story.documentId || chapter.story.id;
 
             if (historyItem) {
-                await strapi.entityService.update('api::reading-history.reading-history', historyItem.documentId || historyItem.id, {
+                await strapi.db.query('api::reading-history.reading-history').update({
+                    where: { id: historyItem.id },
                     data: {
-                        chapter: chapDocId,
+                        chapter: chapter.id,
                         history_updated_at: new Date(),
                     },
                 });
             } else {
-                await strapi.entityService.create('api::reading-history.reading-history', {
+                await strapi.db.query('api::reading-history.reading-history').create({
                     data: {
                         user: userId,
-                        story: storyDocId,
-                        chapter: chapDocId,
+                        story: storyInternalId,
+                        chapter: chapter.id,
                         history_updated_at: new Date(),
                     },
                 });

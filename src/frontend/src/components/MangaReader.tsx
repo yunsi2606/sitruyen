@@ -41,12 +41,13 @@ export function MangaReader({ manga, chapter }: MangaReaderProps) {
         if (readerRef.current) readerRef.current.scrollTop = 0;
         window.scrollTo(0, 0);
 
+        const token = auth.getToken();
+        const user = auth.getUser();
+
         // Increment view count
-        chapterService.markAsRead(Number(chapter.id));
+        chapterService.markAsRead(Number(chapter.id), token);
 
         // Save History (if logged in)
-        const user = auth.getUser();
-        const token = auth.getToken();
         if (user && token) {
             historyService.saveHistory(user.id, Number(manga.id), Number(chapter.id), token);
         }
