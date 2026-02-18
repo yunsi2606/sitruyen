@@ -38,7 +38,7 @@ export interface CreateCommentPayload {
 
 export const commentService = {
     async getComments(storyId?: number, chapterId?: number, limit = 100, token?: string | null): Promise<Comment[]> {
-        let query = `/comments?sort=createdAt:desc&populate[user][fields][0]=username&populate[chapter][fields][0]=chapter_number&populate[chapter][fields][1]=slug&populate[chapter][fields][2]=title&populate[parent][populate][user][fields][0]=username&populate[sticker][populate][file][fields][0]=url&populate[sticker][populate][file][fields][1]=mime&populate[sticker][populate][file][fields][2]=width&populate[sticker][populate][file][fields][3]=height&populate[sticker][fields][0]=name&populate[sticker][fields][1]=duration&populate[sticker][fields][2]=id&populate[sticker][fields][3]=documentId&populate[story][fields][0]=slug`;
+        let query = `/comments?sort=createdAt:desc&populate[user][fields][0]=username&populate[user][fields][1]=avatar_frame&populate[user][fields][2]=name_color&populate[user][fields][3]=level&populate[chapter][fields][0]=chapter_number&populate[chapter][fields][1]=slug&populate[chapter][fields][2]=title&populate[parent][populate][user][fields][0]=username&populate[sticker][populate][file][fields][0]=url&populate[sticker][populate][file][fields][1]=mime&populate[sticker][populate][file][fields][2]=width&populate[sticker][populate][file][fields][3]=height&populate[sticker][fields][0]=name&populate[sticker][fields][1]=duration&populate[sticker][fields][2]=id&populate[sticker][fields][3]=documentId&populate[story][fields][0]=slug`;
 
         if (chapterId) {
             query += `&filters[chapter][id][$eq]=${chapterId}`;
@@ -327,4 +327,51 @@ export const vipOrderService = {
         }
         return res;
     },
+};
+
+// User Level Service
+export const userLevelService = {
+    // Get current user's level info
+    async getMyLevel(token: string) {
+        const res = await fetchAPI('/user-levels/me', {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data; // { userId, exp, level, title, badge, avatarFrame, frameImage, nameColor, dailyClaimed, progress }
+    },
+
+    // Get public level config (frames, badges, etc.)
+    async getLevelConfig() {
+        const res = await fetchAPI('/user-levels/config');
+        return res.data; // { levels: [], expRewards: {} }
+    },
+
+    // Get unlocked cosmetics
+    async getMyCosmetics(token: string) {
+        const res = await fetchAPI('/user-levels/cosmetics', {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data; // { currentLevel, equipped: {}, unlocked: [] }
+    },
+
+    // Update equipped cosmetics
+    async updateCosmetics(token: string, frame?: string, nameColor?: string) {
+        const res = await fetchAPI('/user-levels/cosmetics', {}, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ frame, nameColor })
+        });
+        return res;
+    },
+
+    // Claim daily EXP
+    async claimDaily(token: string) {
+        const res = await fetchAPI('/user-levels/daily', {}, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    }
 };

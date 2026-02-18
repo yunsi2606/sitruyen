@@ -5,9 +5,10 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, Reply, Send, Loader2, Smile, X } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { commentService, storyService, chapterService, stickerService, Comment } from "@/services/api";
+import { commentService, storyService, chapterService, stickerService, userLevelService, Comment } from "@/services/api";
 import { StickerPicker } from "./StickerPicker";
 import { StickerDisplay } from "./StickerDisplay";
+import { AvatarFrame } from "./AvatarFrame";
 
 interface CommentSectionProps {
     storyId: number;
@@ -18,6 +19,9 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<any>(null);
+    const [userLevelInfo, setUserLevelInfo] = useState<any>(null); // To get current user frame
+    const [levelConfig, setLevelConfig] = useState<any[]>([]); // To map user levels to badges
+
     const [replyTo, setReplyTo] = useState<number | null>(null);
     const [newComment, setNewComment] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -51,7 +55,16 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
             stickerService.getStickerPacks(token).then(data => {
                 if (data && data.length > 0) setStickerPacks(data);
             });
+            userLevelService.getMyLevel(token).then(data => {
+                setUserLevelInfo(data);
+            });
         }
+
+        // Fetch Level Config (Public)
+        userLevelService.getLevelConfig().then(data => {
+            if (data && data.levels) setLevelConfig(data.levels);
+        });
+
     }, []);
 
     useEffect(() => {
@@ -156,9 +169,15 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
 
             {currentUser ? (
                 <form onSubmit={handlePostComment} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold uppercase">
-                        {currentUser.username?.[0] || "U"}
+                    {/* Current User Avatar */}
+                    <div className="flex-shrink-0">
+                        <AvatarFrame
+                            username={currentUser.username}
+                            frame={userLevelInfo?.avatarFrame || "default"}
+                            size={48}
+                        />
                     </div>
+
                     <div className="flex-1 space-y-3 relative">
                         {replyTo && (
                             <div className="text-xs text-muted flex items-center gap-2 bg-white/5 p-2 rounded-lg w-fit">
@@ -249,6 +268,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                                 onReply={setReplyTo}
                                 currentUser={currentUser}
                                 isMangaView={!isChapterView}
+                                levelConfig={levelConfig}
                             />
                         ))}
             </div>
@@ -256,10 +276,21 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
     );
 }
 
-function CommentItem({ comment, replies, onReply, currentUser, isMangaView }: { comment: any, replies: any[], onReply: (id: number) => void, currentUser: any, isMangaView: boolean }) {
+function CommentItem({ comment, replies, onReply, currentUser, isMangaView, levelConfig }: { comment: any, replies: any[], onReply: (id: number) => void, currentUser: any, isMangaView: boolean, levelConfig: any[] }) {
     const attributes = comment;
     const userObj = attributes.user;
     const displayName = (typeof userObj === 'object' ? userObj?.username : null) || "Anonymous";
+
+    // Level & Cosmetic Info
+    const userLevel = userObj?.level || 1; // Fallback level 1
+
+    // Map Level to Badge using fetched config
+    const levelInfo = levelConfig?.find((l: any) => l.level === userLevel);
+    const badge = levelInfo?.badge; // e.g. "後輩 Kouhai"
+
+    // Fallback: If user hasn't equipped a frame (null), use the default frame for their level
+    const avatarFrame = userObj?.avatar_frame || levelInfo?.frame || "default";
+    const nameColor = userObj?.name_color || levelInfo?.nameColor || "#ffffff";
 
     const chapter = attributes.chapter;
     const story = attributes.story;
@@ -272,13 +303,31 @@ function CommentItem({ comment, replies, onReply, currentUser, isMangaView }: { 
         : (chapter?.slug ? `/read/${chapter.slug}` : "#");
 
     return (
-        <div className="flex gap-4 group animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="flex-shrink-0 w-10 h-10 bg-surface border border-white/10 rounded-full flex items-center justify-center text-muted font-bold text-sm uppercase overflow-hidden">
-                {displayName[0]}
+        <div className="flex gap-5 group animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {/* Avatar with Frame */}
+            <div className="flex-shrink-0 pt-1">
+                <AvatarFrame
+                    username={displayName}
+                    frame={avatarFrame}
+                    size={48}
+                />
             </div>
+
             <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-white text-sm">{displayName}</span>
+                <div className="flex items-center flex-wrap gap-2 mb-1">
+                    <span
+                        className="font-bold text-sm"
+                        style={{ color: nameColor }}
+                    >
+                        {displayName}
+                    </span>
+
+                    {/* Badge */}
+                    {badge && (
+                        <span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[10px] text-muted uppercase tracking-wide">
+                            {badge}
+                        </span>
+                    )}
 
                     {/* Chapter Tag - Only show on Manga View if chapter exists */}
                     {chapter && isMangaView && (
@@ -310,7 +359,15 @@ function CommentItem({ comment, replies, onReply, currentUser, isMangaView }: { 
                 {replies.length > 0 && (
                     <div className="mt-4 pl-4 border-l-2 border-white/5 space-y-4">
                         {replies.map(reply => (
-                            <CommentItem key={reply.id} comment={reply} replies={[]} onReply={onReply} currentUser={currentUser} isMangaView={isMangaView} />
+                            <CommentItem
+                                key={reply.id}
+                                comment={reply}
+                                replies={[]}
+                                onReply={onReply}
+                                currentUser={currentUser}
+                                isMangaView={isMangaView}
+                                levelConfig={levelConfig}
+                            />
                         ))}
                     </div>
                 )}

@@ -105,6 +105,25 @@
       "relation": "oneToMany",
       "target": "api::report.report",
       "mappedBy": "reporter"
+    },
+    "exp": {
+      "type": "integer",
+      "default": 0
+    },
+    "level": {
+      "type": "integer",
+      "default": 1
+    },
+    "avatar_frame": {
+      "type": "string",
+      "default": "default"
+    },
+    "name_color": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "last_daily_exp": {
+      "type": "datetime"
     }
   }
 }
