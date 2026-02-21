@@ -3,6 +3,7 @@
  */
 
 import { factories } from '@strapi/strapi';
+import type { Chapter, Story, StrapiUser } from '../../../types/strapi.d';
 
 // Simple in-memory cache to prevent spam
 // Key: "ip-IP-chapterId" or "user-UserId-chapterId"
@@ -11,11 +12,12 @@ const viewCache = new Map<string, number>();
 const CACHE_DURATION = 10 * 1000; // 10 seconds for testing, increase later
 
 export default factories.createCoreService('api::chapter.chapter', ({ strapi }) => ({
-    async readChapter(chapterId: string | number, user: any, ip: string) {
+    async readChapter(chapterId: string | number, user: StrapiUser | null, ip: string) {
         // Fetch chapter with story relation
-        const chapter: any = await strapi.entityService.findOne('api::chapter.chapter', chapterId, {
+        const chapter = await strapi.db.query('api::chapter.chapter').findOne({
+            where: { id: chapterId },
             populate: ['story'],
-        });
+        }) as Chapter & { story: Story };
 
         if (!chapter) {
             throw new Error('Chapter not found');
@@ -57,7 +59,9 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
             if (chapter.story) {
                 const currentStoryViews = chapter.story.view_count ? Number(chapter.story.view_count) : 0;
                 const newStoryViews = currentStoryViews + 1;
-                const storyWhere = chapter.story.documentId ? { documentId: chapter.story.documentId } : { id: chapter.story.id };
+                const storyWhere = chapter.story.documentId
+                    ? { documentId: chapter.story.documentId }
+                    : { id: chapter.story.id };
 
                 await strapi.db.query('api::story.story').update({
                     where: storyWhere,
@@ -82,9 +86,6 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
                     story: storyInternalId,
                 },
             });
-
-            const chapDocId = chapter.documentId || chapter.id;
-            const storyDocId = chapter.story.documentId || chapter.story.id;
 
             if (historyItem) {
                 await strapi.db.query('api::reading-history.reading-history').update({
@@ -117,12 +118,13 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
      * Check if user has an active VIP plan.
      * Returns true if user is VIP and subscription has not expired.
      */
-    async isUserVip(user: any): Promise<boolean> {
+    async isUserVip(user: StrapiUser | null): Promise<boolean> {
         if (!user || !user.id) return false;
 
-        const fullUser: any = await strapi.db.query('plugin::users-permissions.user').findOne({
+        const fullUser = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: user.id },
-        });
+            select: ['id', 'plan', 'vip_expired_at'],
+        }) as Pick<StrapiUser, 'id' | 'plan' | 'vip_expired_at'> | null;
 
         if (!fullUser || fullUser.plan !== 'vip') return false;
 
@@ -148,7 +150,7 @@ export default factories.createCoreService('api::chapter.chapter', ({ strapi }) 
                 is_vip_only: true,
                 chap_published_at: { $lte: sevenDaysAgo.toISOString().split('T')[0] },
             },
-        });
+        }) as Chapter[];
 
         if (vipChapters.length === 0) {
             strapi.log.info('[VIP Cron] No chapters to unlock.');

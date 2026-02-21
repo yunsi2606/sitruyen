@@ -8,6 +8,7 @@
  */
 
 import { factories } from '@strapi/strapi';
+import type { VipOrder, SepayWebhookBody } from '../../../types/strapi.d';
 
 export default factories.createCoreController('api::vip-order.vip-order', ({ strapi }) => ({
 
@@ -22,13 +23,13 @@ export default factories.createCoreController('api::vip-order.vip-order', ({ str
             return ctx.unauthorized('You must be logged in to purchase VIP.');
         }
 
-        const { plan } = ctx.request.body as any;
+        const { plan } = ctx.request.body as { plan?: string };
         if (!plan) {
             return ctx.badRequest('Missing plan selection.');
         }
 
         try {
-            const order = await strapi.service('api::vip-order.vip-order').createOrder(user.id, plan);
+            const order = await strapi.service('api::vip-order.vip-order').createOrder(user.id, plan) as VipOrder;
 
             // Build bank transfer info for frontend
             const bankInfo = {
@@ -52,11 +53,12 @@ export default factories.createCoreController('api::vip-order.vip-order', ({ str
                 },
                 bank: bankInfo,
             };
-        } catch (err: any) {
-            if (err.message === 'INVALID_PLAN') {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            if (message === 'INVALID_PLAN') {
                 return ctx.badRequest('Invalid plan selected.');
             }
-            strapi.log.error(`[VIP] Create order failed: ${err.message}`);
+            strapi.log.error(`[VIP] Create order failed: ${message}`);
             return ctx.internalServerError('Failed to create order.');
         }
     },
@@ -66,16 +68,16 @@ export default factories.createCoreController('api::vip-order.vip-order', ({ str
      * Public polling endpoint to check if an order has been paid.
      */
     async checkStatus(ctx) {
-        const { code } = ctx.params;
+        const { code } = ctx.params as { code?: string };
         if (!code) {
             return ctx.badRequest('Missing order code.');
         }
 
         const orders = await strapi.entityService.findMany('api::vip-order.vip-order', {
-            filters: { order_code: code } as any,
+            filters: { order_code: code } as Record<string, unknown>,
         });
 
-        const order = (orders as any[])?.[0];
+        const order = (orders as VipOrder[])?.[0];
         if (!order) {
             return ctx.notFound('Order not found.');
         }
@@ -98,13 +100,13 @@ export default factories.createCoreController('api::vip-order.vip-order', ({ str
      * We match the "code" or "content" field against our order_code.
      */
     async sepayWebhook(ctx) {
-        const body = ctx.request.body as any;
+        const body = ctx.request.body as SepayWebhookBody;
 
         // Validate webhook secret (API Key auth)
         const webhookSecret = process.env.SEPAY_WEBHOOK_SECRET;
         if (webhookSecret) {
-            const authHeader = ctx.request.headers['authorization'];
-            const apiKey = ctx.request.headers['x-api-key'];
+            const authHeader = ctx.request.headers['authorization'] as string | undefined;
+            const apiKey = ctx.request.headers['x-api-key'] as string | undefined;
             const token = apiKey || authHeader?.replace('Apikey ', '');
 
             if (token !== webhookSecret) {
@@ -143,10 +145,10 @@ export default factories.createCoreController('api::vip-order.vip-order', ({ str
         // Fulfill the order
         const result = await strapi.service('api::vip-order.vip-order').fulfillOrder(
             paymentCode.toUpperCase(),
-            body.id,
+            String(body.id),
             body.referenceCode || '',
-            body.transferAmount
-        );
+            body.transferAmount,
+        ) as { success: boolean };
 
         ctx.body = { success: result.success };
     },

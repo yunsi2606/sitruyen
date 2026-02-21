@@ -3,6 +3,7 @@
  */
 
 import { factories } from '@strapi/strapi';
+import type { Chapter } from '../../../types/strapi.d';
 
 export default factories.createCoreController('api::chapter.chapter', ({ strapi }) => ({
     async find(ctx) {
@@ -15,16 +16,18 @@ export default factories.createCoreController('api::chapter.chapter', ({ strapi 
 
         const isVip = await strapi.service('api::chapter.chapter').isUserVip(user);
 
-        const sanitizedData = data.map((chapter: any) => {
-            const attrs = chapter.attributes || chapter; // Handle v4/v5 structure
+        const sanitizedData = (data as Chapter[]).map((chapter) => {
+            const attrs = (chapter as unknown as { attributes?: Chapter }).attributes ?? chapter;
             if (attrs.is_vip_only && !isVip) {
-                // Strip content
-                if (chapter.attributes) {
-                    chapter.attributes.content = null;
-                    chapter.attributes.images = { data: [] };
+                // Strip content – handle both Strapi v4 (attributes wrapper) and v5 (flat)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const chapterRecord = chapter as any;
+                if (chapterRecord.attributes) {
+                    chapterRecord.attributes.content = null;
+                    chapterRecord.attributes.images = { data: [] };
                 } else {
-                    chapter.content = null;
-                    chapter.images = [];
+                    chapterRecord.content = null;
+                    chapterRecord.images = [];
                 }
             }
             return chapter;
@@ -39,16 +42,18 @@ export default factories.createCoreController('api::chapter.chapter', ({ strapi 
 
         if (!data) return { data, meta };
 
-        const attrs = data.attributes || data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const record = data as any;
+        const attrs: Chapter = record.attributes ?? record;
         if (attrs.is_vip_only) {
             const isVip = await strapi.service('api::chapter.chapter').isUserVip(user);
             if (!isVip) {
-                if (data.attributes) {
-                    data.attributes.content = null;
-                    data.attributes.images = { data: [] };
+                if (record.attributes) {
+                    record.attributes.content = null;
+                    record.attributes.images = { data: [] };
                 } else {
-                    data.content = null;
-                    data.images = [];
+                    record.content = null;
+                    record.images = [];
                 }
             }
         }
@@ -57,13 +62,15 @@ export default factories.createCoreController('api::chapter.chapter', ({ strapi 
     },
 
     async read(ctx) {
-        const { id } = ctx.params;
+        const { id } = ctx.params as { id: string };
         const { user } = ctx.state;
-        const ip = ctx.request.ip;
+        const ip: string = ctx.request.ip;
 
         try {
             // Check access first (redundant but safe)
-            const chapter: any = await strapi.entityService.findOne('api::chapter.chapter', id);
+            const chapter = await strapi.db.query('api::chapter.chapter').findOne({
+                where: { id },
+            }) as Chapter | null;
 
             if (chapter && chapter.is_vip_only) {
                 const isVip = await strapi.service('api::chapter.chapter').isUserVip(user);
@@ -74,16 +81,17 @@ export default factories.createCoreController('api::chapter.chapter', ({ strapi 
 
             const result = await strapi.service('api::chapter.chapter').readChapter(id, user, ip);
             ctx.body = result;
-        } catch (err: any) {
-            strapi.log.error(`Chapter Read Error [ID: ${id}]: ${err.message}`);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            strapi.log.error(`Chapter Read Error [ID: ${id}]: ${message}`);
 
-            if (err.message === 'Chapter not found') {
+            if (message === 'Chapter not found') {
                 return ctx.notFound('Chapter not found');
             }
-            if (err.message === 'VIP_REQUIRED') {
+            if (message === 'VIP_REQUIRED') {
                 return ctx.forbidden('This chapter is VIP-only. Upgrade your plan to read it now, or wait for the free release.');
             }
-            ctx.internalServerError("Failed to record view", { error: err.message });
+            ctx.internalServerError('Failed to record view', { error: message });
         }
     },
 }));

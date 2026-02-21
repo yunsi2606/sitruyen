@@ -1,99 +1,57 @@
 /**
  * user-level service
- * 
+ *
  * Core logic for the Level / EXP gamification system.
  * Handles level configuration, EXP granting, level-up detection,
  * and reward assignment (avatar frames, name colors, wibu badges).
  */
 
-// ─── Level Configuration ────────────────────────────────────────
+import type { LevelConfig, GrantExpResult, StrapiUser } from '../../../types/strapi.d';
+
+// Level Configuration
 // Each level defines: EXP threshold, frame key, frame image path,
 // name color, wibu title (long), and badge (short tag for comments).
 
-const LEVEL_CONFIG = [
-    {
-        level: 1, expRequired: 0,
-        frame: "default", frameImage: null,
-        nameColor: "#ffffff",
-        title: "Kouhai", badge: "後輩 Kouhai",
-    },
-    {
-        level: 2, expRequired: 50,
-        frame: "bronze", frameImage: "/frame_bronze.png",
-        nameColor: "#cd7f32",
-        title: "Nakama", badge: "仲間 Nakama",
-    },
-    {
-        level: 3, expRequired: 150,
-        frame: "silver", frameImage: "/frame_silver.png",
-        nameColor: "#c0c0c0",
-        title: "Senpai", badge: "先輩 Senpai",
-    },
-    {
-        level: 4, expRequired: 300,
-        frame: "gold", frameImage: "/frame_gold.png",
-        nameColor: "#a855f7",
-        title: "Otaku Sage", badge: "賢者 Otaku Sage",
-    },
-    {
-        level: 5, expRequired: 500,
-        frame: "platinum", frameImage: "/frame_platinum.png",
-        nameColor: "#ef4444",
-        title: "Chuunibyou", badge: "中二病 Chuunibyou",
-    },
-    {
-        level: 6, expRequired: 800,
-        frame: "diamond", frameImage: "/frame_diamond.png",
-        nameColor: "#10b981",
-        title: "Shounen Hero", badge: "英雄 Shounen Hero",
-    },
-    {
-        level: 7, expRequired: 1200,
-        frame: "emerald", frameImage: "/frame_emerald.png",
-        nameColor: "#f59e0b",
-        title: "Isekai Veteran", badge: "異世界 Isekai",
-    },
-    {
-        level: 8, expRequired: 1800,
-        frame: "legendary", frameImage: "/frame_legendary.png",
-        nameColor: "#ec4899",
-        title: "Manga Kishin", badge: "鬼神 Kishin",
-    },
-    {
-        level: 9, expRequired: 2500,
-        frame: "transcendent", frameImage: "/frame_transcendent.png",
-        nameColor: "#6366f1",
-        title: "Shinigami Reader", badge: "死神 Shinigami",
-    },
-    {
-        level: 10, expRequired: 3500,
-        frame: "ultimate", frameImage: "/frame_ultimate.png",
-        nameColor: "#dc2626",
-        title: "Manga no Kami", badge: "神 Kami-sama",
-    },
+const LEVEL_CONFIG: LevelConfig[] = [
+    { level: 1, expRequired: 0, frame: 'default', frameImage: null, nameColor: '#ffffff', title: 'Kouhai', badge: '後輩 Kouhai' },
+    { level: 2, expRequired: 50, frame: 'bronze', frameImage: '/frame_bronze.png', nameColor: '#cd7f32', title: 'Nakama', badge: '仲間 Nakama' },
+    { level: 3, expRequired: 150, frame: 'silver', frameImage: '/frame_silver.png', nameColor: '#c0c0c0', title: 'Senpai', badge: '先輩 Senpai' },
+    { level: 4, expRequired: 300, frame: 'gold', frameImage: '/frame_gold.png', nameColor: '#a855f7', title: 'Otaku Sage', badge: '賢者 Otaku Sage' },
+    { level: 5, expRequired: 500, frame: 'platinum', frameImage: '/frame_platinum.png', nameColor: '#ef4444', title: 'Chuunibyou', badge: '中二病 Chuunibyou' },
+    { level: 6, expRequired: 800, frame: 'diamond', frameImage: '/frame_diamond.png', nameColor: '#10b981', title: 'Shounen Hero', badge: '英雄 Shounen Hero' },
+    { level: 7, expRequired: 1200, frame: 'emerald', frameImage: '/frame_emerald.png', nameColor: '#f59e0b', title: 'Isekai Veteran', badge: '異世界 Isekai' },
+    { level: 8, expRequired: 1800, frame: 'legendary', frameImage: '/frame_legendary.png', nameColor: '#ec4899', title: 'Manga Kishin', badge: '鬼神 Kishin' },
+    { level: 9, expRequired: 2500, frame: 'transcendent', frameImage: '/frame_transcendent.png', nameColor: '#6366f1', title: 'Shinigami Reader', badge: '死神 Shinigami' },
+    { level: 10, expRequired: 3500, frame: 'ultimate', frameImage: '/frame_ultimate.png', nameColor: '#dc2626', title: 'Manga no Kami', badge: '神 Kami-sama' },
 ];
 
 // EXP reward amounts for various user actions
 const EXP_REWARDS = {
-    CHAPTER_READ: 10, // First time reading a story (via reading-history create)
-    COMMENT_POST: 5, // Posting a comment
-    DAILY_LOGIN: 20, // Daily login bonus (once per calendar day)
-    RATING_GIVEN: 3, // Rating a manga (first time per story)
-};
+    CHAPTER_READ: 10,  // First time reading a story (via reading-history create)
+    COMMENT_POST: 5,   // Posting a comment
+    DAILY_LOGIN: 20,   // Daily login bonus (once per calendar day)
+    RATING_GIVEN: 3,   // Rating a manga (first time per story)
+} as const;
+
+type ExpRewardKeys = typeof EXP_REWARDS;
+
+// DB row from users-permissions
+
+type UserRow = Pick<StrapiUser, 'id' | 'username' | 'exp' | 'level' | 'avatar_frame' | 'name_color' | 'last_daily_exp' | 'vip_expired_at'>;
 
 export default {
     /**
      * Get the full level configuration table.
      * Frontend uses this to display level badges, progress bars, and frame previews.
      */
-    getLevelConfig() {
+    getLevelConfig(): LevelConfig[] {
         return LEVEL_CONFIG;
     },
 
     /**
      * Get EXP reward amounts configuration.
      */
-    getExpRewards() {
+    getExpRewards(): ExpRewardKeys {
         return EXP_REWARDS;
     },
 
@@ -102,7 +60,7 @@ export default {
      * Iterates through levels in reverse to find the highest level
      * the user qualifies for.
      */
-    calculateLevel(exp: number): typeof LEVEL_CONFIG[0] {
+    calculateLevel(exp: number): LevelConfig {
         for (let i = LEVEL_CONFIG.length - 1; i >= 0; i--) {
             if (exp >= LEVEL_CONFIG[i].expRequired) {
                 return LEVEL_CONFIG[i];
@@ -115,28 +73,28 @@ export default {
      * Get the next level info (for progress bar display).
      * Returns null if user is already at max level.
      */
-    getNextLevel(currentLevel: number): typeof LEVEL_CONFIG[0] | null {
+    getNextLevel(currentLevel: number): LevelConfig | null {
         const nextIndex = LEVEL_CONFIG.findIndex(l => l.level === currentLevel + 1);
         return nextIndex !== -1 ? LEVEL_CONFIG[nextIndex] : null;
     },
 
     /**
      * Grant EXP to a user and handle level-up if applicable.
-     * 
+     *
      * Flow:
      *  Fetch user's current EXP
      *  Add new EXP
      *  Calculate new level
      *  If level changed → apply cosmetic rewards (frame, color, badge)
      *  Save updated user data
-     * 
+     *
      * Returns: { oldLevel, newLevel, totalExp, leveledUp, rewards }
      */
-    async grantExp(userId: number, amount: number, reason: string = "unknown") {
-        const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+    async grantExp(userId: number, amount: number, reason: string = 'unknown'): Promise<GrantExpResult | null> {
+        const user = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: userId },
-            select: ["id", "exp", "level"],
-        });
+            select: ['id', 'exp', 'level'],
+        }) as UserRow | null;
 
         if (!user) {
             strapi.log.warn(`[Level] User #${userId} not found, cannot grant EXP`);
@@ -153,7 +111,7 @@ export default {
         const leveledUp = newLevel > oldLevel;
 
         // Build update payload
-        const updateData: Record<string, any> = {
+        const updateData: Record<string, string | number | boolean> = {
             exp: newExp,
             level: newLevel,
         };
@@ -163,18 +121,18 @@ export default {
             updateData.avatar_frame = levelInfo.frame;
             updateData.name_color = levelInfo.nameColor;
             strapi.log.info(
-                `[Level] 🎉 User #${userId} leveled up! ${oldLevel} → ${newLevel} 「${levelInfo.badge}」 | EXP: ${newExp}`
+                `[Level] 🎉 User #${userId} leveled up! ${oldLevel} → ${newLevel} 「${levelInfo.badge}」 | EXP: ${newExp}`,
             );
         }
 
         // Save to database
-        await strapi.db.query("plugin::users-permissions.user").update({
+        await strapi.db.query('plugin::users-permissions.user').update({
             where: { id: userId },
             data: updateData,
         });
 
         strapi.log.debug(
-            `[Level] User #${userId} +${amount} EXP (${reason}) | Total: ${newExp} | Level: ${newLevel}`
+            `[Level] User #${userId} +${amount} EXP (${reason}) | Total: ${newExp} | Level: ${newLevel}`,
         );
 
         return {
@@ -200,32 +158,32 @@ export default {
      * Returns grant result or null if already claimed today.
      */
     async claimDailyLogin(userId: number) {
-        const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+        const user = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: userId },
-            select: ["id", "last_daily_exp"],
-        });
+            select: ['id', 'last_daily_exp'],
+        }) as Pick<UserRow, 'id' | 'last_daily_exp'> | null;
 
         if (!user) return null;
 
         const now = new Date();
-        const todayStr = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
+        const todayStr = now.toISOString().split('T')[0]; // "YYYY-MM-DD"
 
         if (user.last_daily_exp) {
-            const lastClaimStr = new Date(user.last_daily_exp).toISOString().split("T")[0];
+            const lastClaimStr = new Date(user.last_daily_exp).toISOString().split('T')[0];
             if (lastClaimStr === todayStr) {
                 strapi.log.debug(`[Level] User #${userId} already claimed daily EXP today`);
-                return { alreadyClaimed: true, nextClaimAt: todayStr + "T24:00:00.000Z" };
+                return { alreadyClaimed: true, nextClaimAt: todayStr + 'T24:00:00.000Z' };
             }
         }
 
         // Update the last claim timestamp
-        await strapi.db.query("plugin::users-permissions.user").update({
+        await strapi.db.query('plugin::users-permissions.user').update({
             where: { id: userId },
             data: { last_daily_exp: now.toISOString() },
         });
 
         // Grant EXP
-        const result = await this.grantExp(userId, EXP_REWARDS.DAILY_LOGIN, "daily_login");
+        const result = await this.grantExp(userId, EXP_REWARDS.DAILY_LOGIN, 'daily_login');
 
         return { alreadyClaimed: false, ...result };
     },
@@ -235,10 +193,10 @@ export default {
      * Now also returns badge and frameImage for frontend display.
      */
     async getUserLevelInfo(userId: number) {
-        const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+        const user = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: userId },
-            select: ["id", "username", "exp", "level", "avatar_frame", "name_color", "last_daily_exp"],
-        });
+            select: ['id', 'username', 'exp', 'level', 'avatar_frame', 'name_color', 'last_daily_exp'],
+        }) as UserRow | null;
 
         if (!user) return null;
 
@@ -260,8 +218,8 @@ export default {
         // Check if daily login is already claimed today
         let dailyClaimed = false;
         if (user.last_daily_exp) {
-            const todayStr = new Date().toISOString().split("T")[0];
-            const lastClaimStr = new Date(user.last_daily_exp).toISOString().split("T")[0];
+            const todayStr = new Date().toISOString().split('T')[0];
+            const lastClaimStr = new Date(user.last_daily_exp).toISOString().split('T')[0];
             dailyClaimed = lastClaimStr === todayStr;
         }
 
@@ -279,7 +237,7 @@ export default {
             progress: {
                 percent: progressPercent,
                 currentLevelExp: currentLevelInfo.expRequired,
-                nextLevelExp: nextLevelInfo?.expRequired || null,
+                nextLevelExp: nextLevelInfo?.expRequired ?? null,
                 expToNextLevel,
             },
             isMaxLevel: !nextLevelInfo,
@@ -292,10 +250,10 @@ export default {
      * the user's current level, plus which ones are currently equipped.
      */
     async getUnlockedCosmetics(userId: number) {
-        const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+        const user = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: userId },
-            select: ["id", "exp", "level", "avatar_frame", "name_color"],
-        });
+            select: ['id', 'exp', 'level', 'avatar_frame', 'name_color'],
+        }) as UserRow | null;
 
         if (!user) return null;
 
@@ -331,12 +289,12 @@ export default {
      * Accepts partial updates — only provided fields are changed.
      */
     async setCosmetics(userId: number, options: { frame?: string; nameColor?: string }) {
-        const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+        const user = await strapi.db.query('plugin::users-permissions.user').findOne({
             where: { id: userId },
-            select: ["id", "exp", "level"],
-        });
+            select: ['id', 'exp', 'level', 'avatar_frame', 'name_color'],
+        }) as UserRow | null;
 
-        if (!user) return { success: false, error: "User not found" };
+        if (!user) return { success: false, error: 'User not found' };
 
         const exp = user.exp || 0;
         const currentLevelInfo = this.calculateLevel(exp);
@@ -345,7 +303,7 @@ export default {
         // Get all unlocked level configs
         const unlockedConfigs = LEVEL_CONFIG.filter(l => l.level <= currentLevel);
 
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, string> = {};
 
         // Validate and set frame
         if (options.frame !== undefined) {
@@ -366,16 +324,16 @@ export default {
         }
 
         if (Object.keys(updateData).length === 0) {
-            return { success: false, error: "No valid cosmetic options provided" };
+            return { success: false, error: 'No valid cosmetic options provided' };
         }
 
-        await strapi.db.query("plugin::users-permissions.user").update({
+        await strapi.db.query('plugin::users-permissions.user').update({
             where: { id: userId },
             data: updateData,
         });
 
         strapi.log.info(
-            `[Level] User #${userId} changed cosmetics: ${JSON.stringify(updateData)}`
+            `[Level] User #${userId} changed cosmetics: ${JSON.stringify(updateData)}`,
         );
 
         // Return the updated cosmetics state
@@ -396,12 +354,12 @@ export default {
      * Returns badge and frameImage alongside each entry.
      */
     async getLeaderboard(limit: number = 10) {
-        const users = await strapi.db.query("plugin::users-permissions.user").findMany({
+        const users = await strapi.db.query('plugin::users-permissions.user').findMany({
             where: { exp: { $gt: 0 } },
-            select: ["id", "username", "exp", "level", "avatar_frame", "name_color"],
-            orderBy: { exp: "desc" },
+            select: ['id', 'username', 'exp', 'level', 'avatar_frame', 'name_color'],
+            orderBy: { exp: 'desc' },
             limit,
-        });
+        }) as UserRow[];
 
         return users.map((user, index) => {
             const levelInfo = this.calculateLevel(user.exp || 0);

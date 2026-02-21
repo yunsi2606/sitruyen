@@ -1,4 +1,6 @@
 import type { Core } from '@strapi/strapi';
+import type { Chapter, Story } from './types/strapi.d';
+
 const slugify = require('slugify');
 
 export default {
@@ -58,12 +60,14 @@ export default {
       async afterUpdate(event) {
         const { result, params } = event;
         const { data } = params;
+        // data.story may be undefined when only view_count is updated
+        // → fallback: read story relation from the updated chapter itself
         let storyId = extractStoryId(data.story);
         if (!storyId && result) {
-          const chapter: any = await strapi.db.query('api::chapter.chapter').findOne({
-            where: { id: (result as any).id },
+          const chapter = await strapi.db.query('api::chapter.chapter').findOne({
+            where: { id: (result as Chapter).id },
             populate: ['story'],
-          });
+          }) as (Chapter & { story?: Story }) | null;
           storyId = chapter?.story?.id ?? null;
         }
         if (storyId) {
@@ -73,17 +77,17 @@ export default {
 
       async beforeDelete(event) {
         const { where } = event.params;
-        const chapter: any = await strapi.db.query('api::chapter.chapter').findOne({
+        const chapter = await strapi.db.query('api::chapter.chapter').findOne({
           where,
           populate: ['story'],
-        });
+        }) as (Chapter & { story?: Story }) | null;
         if (chapter && chapter.story) {
           event.state.storyId = chapter.story.id;
         }
       },
 
       async afterDelete(event) {
-        const storyId = event.state.storyId;
+        const storyId = (event.state as { storyId?: number }).storyId;
         if (storyId) {
           await updateTotalChapters(strapi, storyId);
           await syncStoryViewCount(strapi, storyId);
@@ -101,20 +105,28 @@ export default {
  *   - a connect array: { connect: [{ id: 42 }] }
  *   - a set array:     { set: [{ id: 42 }] }
  */
-function extractStoryId(story: any): number | null {
+function extractStoryId(story: unknown): number | null {
   if (!story) return null;
   if (typeof story === 'number') return story;
   if (typeof story === 'string') return Number(story) || null;
-  // { id: 42 }
-  if (typeof story === 'object' && story.id) return Number(story.id);
-  // { connect: [{ id: 42 }] }
-  if (Array.isArray(story?.connect) && story.connect[0]?.id) return Number(story.connect[0].id);
-  // { set: [{ id: 42 }] }
-  if (Array.isArray(story?.set) && story.set[0]?.id) return Number(story.set[0].id);
+
+  if (typeof story === 'object' && story !== null) {
+    const s = story as Record<string, unknown>;
+    // { id: 42 }
+    if (typeof s.id === 'number') return s.id;
+    // { connect: [{ id: 42 }] }
+    if (Array.isArray(s.connect) && typeof (s.connect[0] as Record<string, unknown>)?.id === 'number') {
+      return (s.connect[0] as { id: number }).id;
+    }
+    // { set: [{ id: 42 }] }
+    if (Array.isArray(s.set) && typeof (s.set[0] as Record<string, unknown>)?.id === 'number') {
+      return (s.set[0] as { id: number }).id;
+    }
+  }
   return null;
 }
 
-async function updateTotalChapters(strapi: Core.Strapi, storyId: any) {
+async function updateTotalChapters(strapi: Core.Strapi, storyId: number): Promise<void> {
   if (!storyId) return;
   try {
     const count = await strapi.db.query('api::chapter.chapter').count({
@@ -133,23 +145,24 @@ async function updateTotalChapters(strapi: Core.Strapi, storyId: any) {
       data: { total_chapters: count },
     });
     strapi.log.info(`Updated total_chapters for Story ${storyId} to ${count}`);
-  } catch (err: any) {
-    strapi.log.error(`Failed to update total_chapters: ${err.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    strapi.log.error(`Failed to update total_chapters: ${message}`);
   }
 }
 
-async function syncStoryViewCount(strapi: Core.Strapi, storyId: any) {
+async function syncStoryViewCount(strapi: Core.Strapi, storyId: number): Promise<void> {
   if (!storyId) return;
   try {
     // Fetch all chapters for this story and sum their view_count
     const chapters = await strapi.db.query('api::chapter.chapter').findMany({
       where: { story: storyId },
       select: ['view_count'],
-    });
+    }) as Pick<Chapter, 'view_count'>[];
 
     const total = chapters.reduce(
-      (sum: number, ch: any) => sum + (Number(ch.view_count) || 0),
-      0
+      (sum, ch) => sum + (Number(ch.view_count) || 0),
+      0,
     );
 
     await strapi.db.query('api::story.story').update({
@@ -157,7 +170,8 @@ async function syncStoryViewCount(strapi: Core.Strapi, storyId: any) {
       data: { view_count: total },
     });
     strapi.log.info(`[ViewSync] Story ${storyId} view_count → ${total}`);
-  } catch (err: any) {
-    strapi.log.error(`[ViewSync] Failed to sync story view_count: ${err.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    strapi.log.error(`[ViewSync] Failed to sync story view_count: ${message}`);
   }
 }

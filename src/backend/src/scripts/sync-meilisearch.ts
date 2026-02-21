@@ -7,16 +7,21 @@
  */
 
 import type { Core } from '@strapi/strapi';
+import type { Story, Category, MeiliStoryDocument } from '../types/strapi.d';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { MeiliSearch } = require('meilisearch');
-
 
 const MEILI_HOST = process.env.MEILISEARCH_HOST || 'http://localhost:7700';
 const MEILI_KEY = process.env.MEILISEARCH_KEY || '';
 const INDEX_NAME = 'stories';
 
-export async function syncStories(strapi: Core.Strapi) {
+type StoryWithRelations = Story & {
+    cover?: { url?: string } | null;
+    categories?: Category[];
+};
+
+export async function syncStories(strapi: Core.Strapi): Promise<number> {
     const client = new MeiliSearch({ host: MEILI_HOST, apiKey: MEILI_KEY });
 
     strapi.log.info('[MeiliSync] Starting story sync...');
@@ -64,23 +69,23 @@ export async function syncStories(strapi: Core.Strapi) {
     let totalSynced = 0;
 
     while (true) {
-        const stories: any[] = await strapi.db.query('api::story.story').findMany({
+        const stories = await strapi.db.query('api::story.story').findMany({
             populate: { cover: { fields: ['url'] }, categories: { fields: ['name', 'slug'] } },
             limit: pageSize,
             offset: (page - 1) * pageSize,
             orderBy: { id: 'asc' },
-        });
+        }) as StoryWithRelations[];
 
         if (!stories || stories.length === 0) break;
 
         // Transform to Meilisearch document format
-        const documents = stories.map((s) => ({
+        const documents: MeiliStoryDocument[] = stories.map((s) => ({
             id: s.id,
             title: s.title || '',
             slug: s.slug || '',
             author: typeof s.author === 'string' ? s.author : '',
             description_text: s.description_text || '',
-            cover: s.cover?.url || null,
+            cover: s.cover?.url ?? null,
             view_count: Number(s.view_count) || 0,
             follow_count: Number(s.follow_count) || 0,
             rating: Number(s.rating) || 0,
@@ -88,8 +93,8 @@ export async function syncStories(strapi: Core.Strapi) {
             updatedAt: s.updatedAt,
             createdAt: s.createdAt,
             // Flatten categories for filterableAttributes
-            categories: (s.categories || []).map((c: any) => c.slug).filter(Boolean),
-            categories_names: (s.categories || []).map((c: any) => c.name).filter(Boolean).join(' '),
+            categories: (s.categories || []).map((c) => c.slug).filter(Boolean) as string[],
+            categories_names: (s.categories || []).map((c) => c.name).filter(Boolean).join(' '),
         }));
 
         await index.addDocuments(documents, { primaryKey: 'id' });

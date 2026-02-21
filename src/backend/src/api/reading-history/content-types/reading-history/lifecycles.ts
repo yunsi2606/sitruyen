@@ -1,21 +1,31 @@
 /**
  * reading-history lifecycle hooks
- * 
+ *
  * Hooks into the reading-history content type to automatically
  * grant EXP when a user reads a new story for the first time.
- * 
+ *
  * Flow:
  *   User reads chapter → Frontend calls POST /reading-histories (first time for this story)
  *   → afterCreate fires → Grant EXP via user-level service
- * 
+ *
  * Note: saveHistory in frontend uses upsert pattern:
  *   - CREATE only fires for the FIRST chapter of each story per user
  *   - Subsequent chapters of the same story trigger UPDATE (no EXP granted)
  *   This naturally prevents EXP farming by re-reading the same story.
  */
 
+import type { GrantExpResult } from '../../../../types/strapi.d';
+
+interface ReadingHistoryResult {
+    user?: { id: number } | number;
+}
+
+interface LevelService {
+    grantExp(userId: number, amount: number, reason: string): Promise<GrantExpResult | null>;
+}
+
 export default {
-    async afterCreate(event) {
+    async afterCreate(event: { result: ReadingHistoryResult }) {
         const { result } = event;
 
         try {
@@ -24,26 +34,26 @@ export default {
             let userId: number | null = null;
 
             if (result.user) {
-                userId = typeof result.user === "object" ? result.user.id : result.user;
+                userId = typeof result.user === 'object' ? result.user.id : result.user;
             }
 
             if (!userId) {
-                strapi.log.debug("[Level] Reading history created without user, skipping EXP grant");
+                strapi.log.debug('[Level] Reading history created without user, skipping EXP grant');
                 return;
             }
 
             // Grant EXP for reading a new story (+10 = EXP_REWARDS.CHAPTER_READ)
-            const levelService = strapi.service("api::user-level.user-level") as any;
-            const grantResult = await levelService.grantExp(userId, 10, "chapter_read");
+            const levelService = strapi.service('api::user-level.user-level') as LevelService;
+            const grantResult = await levelService.grantExp(userId, 10, 'chapter_read');
 
             if (grantResult?.leveledUp) {
                 strapi.log.info(
-                    `[Level] 🎉 User #${userId} leveled up to ${grantResult.newLevel} after reading!`
+                    `[Level] 🎉 User #${userId} leveled up to ${grantResult.newLevel} after reading!`,
                 );
             }
-        } catch (error) {
+        } catch (error: unknown) {
             // Never let EXP errors break the reading experience
-            strapi.log.error(`[Level] Error granting EXP in reading-history lifecycle:`, error);
+            strapi.log.error('[Level] Error granting EXP in reading-history lifecycle:', error);
         }
     },
 };

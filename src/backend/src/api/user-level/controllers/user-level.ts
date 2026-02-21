@@ -1,6 +1,6 @@
 /**
  * user-level controller
- * 
+ *
  * API Endpoints:
  *   GET  /api/user-levels/me → Get authenticated user's level info
  *   GET  /api/user-levels/leaderboard → Get top users by EXP
@@ -9,6 +9,18 @@
  *   GET  /api/user-levels/cosmetics → Get unlocked cosmetics
  *   PUT  /api/user-levels/cosmetics → Change equipped frame/color
  */
+
+import type { LevelConfig, GrantExpResult } from '../../../types/strapi.d';
+
+interface UserLevelService {
+    getUserLevelInfo(userId: number): Promise<object | null>;
+    getLeaderboard(limit: number): Promise<object[]>;
+    getLevelConfig(): LevelConfig[];
+    getExpRewards(): Record<string, number>;
+    claimDailyLogin(userId: number): Promise<{ alreadyClaimed: boolean; nextClaimAt?: string } & Partial<GrantExpResult> | null>;
+    getUnlockedCosmetics(userId: number): Promise<object | null>;
+    setCosmetics(userId: number, options: { frame?: string; nameColor?: string }): Promise<{ success: boolean; error?: string; equipped?: object }>;
+}
 
 export default {
     /**
@@ -20,14 +32,14 @@ export default {
         const user = ctx.state.user;
 
         if (!user) {
-            return ctx.unauthorized("You must be logged in to view your level.");
+            return ctx.unauthorized('You must be logged in to view your level.');
         }
 
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const levelInfo = await levelService.getUserLevelInfo(user.id);
 
         if (!levelInfo) {
-            return ctx.notFound("User not found.");
+            return ctx.notFound('User not found.');
         }
 
         return ctx.send({ data: levelInfo });
@@ -41,10 +53,10 @@ export default {
     async getLeaderboard(ctx) {
         const limit = Math.min(
             Math.max(parseInt(ctx.query.limit as string) || 10, 1),
-            50
+            50,
         );
 
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const leaderboard = await levelService.getLeaderboard(limit);
 
         return ctx.send({ data: leaderboard });
@@ -56,7 +68,7 @@ export default {
      * Frontend uses this to display level badges, progress bars, etc.
      */
     async getLevelConfig(ctx) {
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const config = levelService.getLevelConfig();
         const expRewards = levelService.getExpRewards();
 
@@ -64,7 +76,7 @@ export default {
             data: {
                 levels: config,
                 expRewards,
-            }
+            },
         });
     },
 
@@ -77,14 +89,14 @@ export default {
         const user = ctx.state.user;
 
         if (!user) {
-            return ctx.unauthorized("You must be logged in to claim daily bonus.");
+            return ctx.unauthorized('You must be logged in to claim daily bonus.');
         }
 
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const result = await levelService.claimDailyLogin(user.id);
 
         if (!result) {
-            return ctx.notFound("User not found.");
+            return ctx.notFound('User not found.');
         }
 
         if (result.alreadyClaimed) {
@@ -104,14 +116,14 @@ export default {
         const user = ctx.state.user;
 
         if (!user) {
-            return ctx.unauthorized("You must be logged in to view your cosmetics.");
+            return ctx.unauthorized('You must be logged in to view your cosmetics.');
         }
 
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const cosmetics = await levelService.getUnlockedCosmetics(user.id);
 
         if (!cosmetics) {
-            return ctx.notFound("User not found.");
+            return ctx.notFound('User not found.');
         }
 
         return ctx.send({ data: cosmetics });
@@ -121,26 +133,26 @@ export default {
      * PUT /api/user-levels/cosmetics
      * Change the user's equipped frame and/or name color.
      * Only allows selecting cosmetics from levels already unlocked.
-     * 
+     *
      * Body: { frame?: string, nameColor?: string }
      * Example: { "frame": "gold", "nameColor": "#a855f7" }
-     * 
+     *
      * Requires: Authenticated user
      */
     async updateMyCosmetics(ctx) {
         const user = ctx.state.user;
 
         if (!user) {
-            return ctx.unauthorized("You must be logged in to change your cosmetics.");
+            return ctx.unauthorized('You must be logged in to change your cosmetics.');
         }
 
-        const { frame, nameColor } = ctx.request.body || {};
+        const { frame, nameColor } = ctx.request.body as { frame?: string; nameColor?: string };
 
         if (frame === undefined && nameColor === undefined) {
-            return ctx.badRequest("Please provide at least one of: frame, nameColor");
+            return ctx.badRequest('Please provide at least one of: frame, nameColor');
         }
 
-        const levelService = strapi.service("api::user-level.user-level") as any;
+        const levelService = strapi.service('api::user-level.user-level') as UserLevelService;
         const result = await levelService.setCosmetics(user.id, { frame, nameColor });
 
         if (!result.success) {
