@@ -18,6 +18,7 @@ export default {
    * run jobs, or perform some special logic.
    */
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+
     strapi.db.lifecycles.subscribe({
       models: ['api::chapter.chapter'],
 

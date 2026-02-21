@@ -18,10 +18,12 @@
     "@strapi/plugin-cloud": "5.35.0",
     "@strapi/plugin-users-permissions": "5.35.0",
     "@strapi/strapi": "5.35.0",
+    "meilisearch": "^0.55.0",
     "pg": "8.8.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "redis": "^5.11.0",
     "slugify": "^1.6.6",
     "styled-components": "^6.0.0"
   },

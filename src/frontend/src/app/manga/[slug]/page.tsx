@@ -79,9 +79,23 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     const manga = await getManga(params.slug);
     if (!manga) return {};
 
+    // Find latest chapter (highest chapter number)
+    const latestChapter = manga.chapters.length > 0
+        ? [...manga.chapters].sort((a, b) => b.number - a.number)[0]
+        : null;
+
+    const titleSuffix = latestChapter
+        ? ` [tới Chapter ${latestChapter.number}]`
+        : '';
+
     return {
-        title: `${manga.title} - SiTruyen`,
+        title: `${manga.title}${titleSuffix} - SiTruyen`,
         description: manga.description,
+        openGraph: {
+            title: `${manga.title}${titleSuffix} - SiTruyen`,
+            description: manga.description,
+            images: manga.cover ? [{ url: manga.cover }] : [],
+        },
     };
 }
 

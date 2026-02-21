@@ -58,47 +58,79 @@ export default function BrowsePage() {
         const fetchManga = async () => {
             setLoading(true);
             try {
-                // Construct basic filter
-                let query = `/stories?populate=*&sort=${sortBy}&pagination[page]=${page}&pagination[pageSize]=24`;
+                let formatted: Manga[] = [];
+                let paginationData = { page: 1, pageCount: 1, total: 0 };
 
-                // Add genre filter
-                if (selectedGenre) {
-                    query += `&filters[categories][slug][$eq]=${selectedGenre}`;
-                }
+                if (searchQuery.trim()) {
+                    // Use Meilisearch search API
+                    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+                    const params = new URLSearchParams({
+                        q: searchQuery,
+                        page: String(page),
+                        limit: '24',
+                        sort: sortBy,
+                    });
+                    if (selectedGenre) params.set('genre', selectedGenre);
+                    if (statusFilter) params.set('status', statusFilter.toLowerCase());
 
-                // Add status filter
-                if (statusFilter) {
-                    query += `&filters[story_status][$eq]=${statusFilter.toLowerCase()}`;
-                }
+                    const res = await fetch(`${STRAPI_URL}/api/stories/search?${params.toString()}`);
+                    const data = await res.json();
 
-                // Add text search
-                if (searchQuery) {
-                    query += `&filters[title][$containsi]=${searchQuery}`;
-                }
-
-                const res = await storyService.search(query);
-
-                if (res.data) {
-                    const formatted: Manga[] = res.data.map((item: any) => {
+                    // Meilisearch or DB fallback format
+                    const hits = data.results || data.data || [];
+                    formatted = hits.map((item: any) => {
                         const attrs = item.attributes || item;
                         return {
-                            id: item.id.toString(),
-                            title: attrs.title,
-                            slug: attrs.slug,
-                            cover: getStrapiMedia(attrs.cover?.data?.attributes?.url || attrs.cover?.url || null) || "",
-                            description: "", // Not needed for card
+                            id: String(attrs.id || item.id),
+                            title: attrs.title || '',
+                            slug: attrs.slug || '',
+                            cover: getStrapiMedia(attrs.cover?.data?.attributes?.url || attrs.cover?.url || attrs.cover || null) || '',
+                            description: '',
                             rating: attrs.rating || 0,
-                            status: attrs.story_status === 'completed' ? 'Completed' : 'Ongoing',
+                            status: (attrs.story_status || attrs.status) === 'completed' ? 'Completed' : 'Ongoing',
                             view_count: Number(attrs.view_count || 0),
-                            genres: (attrs.categories?.data || []).map((c: any) => c.attributes?.name || c.name) || [],
-                            chapters: [] // Not needed
+                            genres: (attrs.categories || []).map((c: any) => c?.name || c).filter(Boolean),
+                            chapters: [],
                         };
                     });
-                    setMangaList(formatted);
-                    setPagination(res.meta?.pagination || { page: 1, pageCount: 1, total: 0 });
+
+                    const total = data.total || formatted.length;
+                    paginationData = {
+                        page: data.page || page,
+                        pageCount: Math.ceil(total / 24) || 1,
+                        total,
+                    };
+                } else {
+                    // Use Strapi native browse (no text search)
+                    let query = `/stories?populate=*&sort=${sortBy}&pagination[page]=${page}&pagination[pageSize]=24`;
+                    if (selectedGenre) query += `&filters[categories][slug][$eq]=${selectedGenre}`;
+                    if (statusFilter) query += `&filters[story_status][$eq]=${statusFilter.toLowerCase()}`;
+
+                    const res = await storyService.search(query);
+                    if (res.data) {
+                        formatted = res.data.map((item: any) => {
+                            const attrs = item.attributes || item;
+                            return {
+                                id: item.id.toString(),
+                                title: attrs.title,
+                                slug: attrs.slug,
+                                cover: getStrapiMedia(attrs.cover?.data?.attributes?.url || attrs.cover?.url || null) || '',
+                                description: '',
+                                rating: attrs.rating || 0,
+                                status: attrs.story_status === 'completed' ? 'Completed' : 'Ongoing',
+                                view_count: Number(attrs.view_count || 0),
+                                genres: (attrs.categories?.data || []).map((c: any) => c.attributes?.name || c.name) || [],
+                                chapters: [],
+                            };
+                        });
+                        paginationData = res.meta?.pagination || { page: 1, pageCount: 1, total: 0 };
+                    }
                 }
+
+                setMangaList(formatted);
+                setPagination(paginationData);
             } catch (err) {
-                console.error("Failed to fetch manga", err);
+                console.error('Failed to fetch manga', err);
                 setMangaList([]);
             } finally {
                 setLoading(false);
@@ -108,6 +140,7 @@ export default function BrowsePage() {
         const timeout = setTimeout(fetchManga, 300);
         return () => clearTimeout(timeout);
     }, [page, sortBy, selectedGenre, searchQuery, statusFilter]);
+
 
     // Update URL on filter change
     useEffect(() => {
@@ -132,10 +165,26 @@ export default function BrowsePage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 animate-in fade-in-down duration-500">
                     <div>
                         <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-                            <Grid className="w-8 h-8 text-accent" /> Browse Manga
+                            <Grid className="w-8 h-8 text-accent" />
+                            {searchQuery.trim() ? (
+                                <>
+                                    Search: <span className="text-accent">&ldquo;{searchQuery}&rdquo;</span>
+                                </>
+                            ) : 'Browse Manga'}
                         </h1>
-                        <p className="text-muted text-sm mt-1">Found {pagination.total} titles for you</p>
+                        <div className="flex items-center gap-3 mt-1">
+                            <p className="text-muted text-sm">Found {pagination.total} titles</p>
+                            {searchQuery.trim() && (
+                                <button
+                                    onClick={() => { setSearchQuery(''); setPage(1); }}
+                                    className="text-xs text-accent hover:underline flex items-center gap-1"
+                                >
+                                    × Clear search
+                                </button>
+                            )}
+                        </div>
                     </div>
+
 
                     <div className="flex flex-wrap items-center gap-3">
                         {/* Search Input */}

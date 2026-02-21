@@ -33,10 +33,14 @@ services:
       SEPAY_ACCOUNT_NAME: ${SEPAY_ACCOUNT_NAME:-SITRUYEN}
       SEPAY_WEBHOOK_SECRET: ${SEPAY_WEBHOOK_SECRET}
       SEPAY_PREFIX: ${SEPAY_PREFIX:-ST}
+      MEILISEARCH_HOST: ${MEILISEARCH_HOST:-http://meilisearch:7700}
+      MEILISEARCH_KEY: ${MEILISEARCH_KEY:-}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     volumes:
       - strapi_uploads:/app/public/uploads
     networks:
       - database_network
+      - tools_network
       - default
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1337/_health" ]
@@ -97,6 +101,8 @@ volumes:
 
 networks:
   database_network:
+    external: true
+  tools_network:
     external: true
   default:
     driver: bridge

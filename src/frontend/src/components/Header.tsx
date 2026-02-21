@@ -2,11 +2,13 @@
 
 import { useTheme } from "next-themes";
 import Link from 'next/link';
-import { Search, Bell, Sun, Moon, User, Menu, ChevronDown, List, Clock, Zap, Star, LogOut, Crown } from "lucide-react";
+import { Bell, Sun, Moon, User, Menu, ChevronDown, List, Zap, LogOut, Crown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { categoryService } from "@/services/api";
+import { SearchBar } from "@/components/SearchBar";
+
 
 export function Header() {
     const { theme, setTheme } = useTheme();
@@ -118,15 +120,11 @@ export function Header() {
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-4">
-                    {/* Expandable Search Input (Skeleton for layout) */}
-                    <div className="relative hidden md:flex items-center bg-white/5 rounded-full border border-white/10 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-all w-64 h-10 px-4">
-                        <Search className="w-4 h-4 text-muted" />
-                        <input
-                            type="text"
-                            placeholder="Search manga, author..."
-                            className="bg-transparent border-none outline-none text-sm text-white placeholder-muted w-full ml-2 h-full"
-                        />
+                    {/* Search Bar with Autocomplete + Hot Searches */}
+                    <div className="hidden md:block">
+                        <SearchBar variant="inline" />
                     </div>
+
 
                     {/* Theme Toggle */}
                     <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition-colors">

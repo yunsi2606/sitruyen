@@ -1,0 +1,40 @@
+# Search Infrastructure - Docker Compose
+# Run: docker-compose -f docker-compose.search.yml up -d
+
+services:
+  # Meilisearch
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: sitruyen_meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    volumes:
+      - meili_data:/meili_data
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-}
+      MEILI_ENV: development
+    networks:
+      - tools_network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: sitruyen_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    networks:
+      - tools_network
+
+volumes:
+  meili_data:
+  redis_data:
+
+
+networks:
+  tools_network:
+    external: true
