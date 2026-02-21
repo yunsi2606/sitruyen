@@ -48,9 +48,26 @@ export default {
       async afterCreate(event) {
         const { params } = event;
         const { data } = params;
-        const storyId = data.story;
+        const storyId = extractStoryId(data.story);
         if (storyId) {
           await updateTotalChapters(strapi, storyId);
+          await syncStoryViewCount(strapi, storyId);
+        }
+      },
+
+      async afterUpdate(event) {
+        const { result, params } = event;
+        const { data } = params;
+        let storyId = extractStoryId(data.story);
+        if (!storyId && result) {
+          const chapter: any = await strapi.db.query('api::chapter.chapter').findOne({
+            where: { id: (result as any).id },
+            populate: ['story'],
+          });
+          storyId = chapter?.story?.id ?? null;
+        }
+        if (storyId) {
+          await syncStoryViewCount(strapi, storyId);
         }
       },
 
@@ -69,11 +86,33 @@ export default {
         const storyId = event.state.storyId;
         if (storyId) {
           await updateTotalChapters(strapi, storyId);
+          await syncStoryViewCount(strapi, storyId);
         }
       },
     });
   },
 };
+
+/**
+ * Normalize the `story` field from event.params.data into a plain numeric ID.
+ * Strapi can pass it as:
+ *   - a number: 42
+ *   - an object with id: { id: 42 }
+ *   - a connect array: { connect: [{ id: 42 }] }
+ *   - a set array:     { set: [{ id: 42 }] }
+ */
+function extractStoryId(story: any): number | null {
+  if (!story) return null;
+  if (typeof story === 'number') return story;
+  if (typeof story === 'string') return Number(story) || null;
+  // { id: 42 }
+  if (typeof story === 'object' && story.id) return Number(story.id);
+  // { connect: [{ id: 42 }] }
+  if (Array.isArray(story?.connect) && story.connect[0]?.id) return Number(story.connect[0].id);
+  // { set: [{ id: 42 }] }
+  if (Array.isArray(story?.set) && story.set[0]?.id) return Number(story.set[0].id);
+  return null;
+}
 
 async function updateTotalChapters(strapi: Core.Strapi, storyId: any) {
   if (!storyId) return;
@@ -96,5 +135,29 @@ async function updateTotalChapters(strapi: Core.Strapi, storyId: any) {
     strapi.log.info(`Updated total_chapters for Story ${storyId} to ${count}`);
   } catch (err: any) {
     strapi.log.error(`Failed to update total_chapters: ${err.message}`);
+  }
+}
+
+async function syncStoryViewCount(strapi: Core.Strapi, storyId: any) {
+  if (!storyId) return;
+  try {
+    // Fetch all chapters for this story and sum their view_count
+    const chapters = await strapi.db.query('api::chapter.chapter').findMany({
+      where: { story: storyId },
+      select: ['view_count'],
+    });
+
+    const total = chapters.reduce(
+      (sum: number, ch: any) => sum + (Number(ch.view_count) || 0),
+      0
+    );
+
+    await strapi.db.query('api::story.story').update({
+      where: { id: storyId },
+      data: { view_count: total },
+    });
+    strapi.log.info(`[ViewSync] Story ${storyId} view_count → ${total}`);
+  } catch (err: any) {
+    strapi.log.error(`[ViewSync] Failed to sync story view_count: ${err.message}`);
   }
 }
