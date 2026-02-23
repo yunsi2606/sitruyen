@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -25,6 +26,9 @@ export default function RegisterPage() {
         try {
             const res = await auth.register(formData.username, formData.email, formData.password);
             if (res.success) {
+                trackEvent(EVENTS.SIGN_UP, {
+                    method: 'email'
+                });
                 router.push("/");
                 router.refresh();
             } else {

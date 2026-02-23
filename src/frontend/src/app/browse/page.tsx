@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Star, Clock, Filter, ChevronDown, List, Grid, Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Manga } from '@/types';
+import { trackEvent, EVENTS } from '@/lib/gtag';
 
 const SORT_OPTIONS = [
     { label: 'Latest Updates', value: 'updatedAt:desc' },
@@ -150,6 +151,16 @@ export default function BrowsePage() {
         if (sortBy) params.set('sort', sortBy);
         if (statusFilter) params.set('status', statusFilter);
         window.history.replaceState(null, '', `/browse?${params.toString()}`);
+
+        // GA4 Tracking
+        if (selectedGenre || statusFilter || sortBy !== 'updatedAt:desc' || searchQuery) {
+            trackEvent('apply_filter', {
+                genre: selectedGenre || 'all',
+                status: statusFilter || 'any',
+                sort: sortBy,
+                query: searchQuery
+            });
+        }
     }, [searchQuery, selectedGenre, sortBy, statusFilter]);
 
     const handleSearch = (e: React.FormEvent) => {

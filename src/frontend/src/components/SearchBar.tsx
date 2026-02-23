@@ -5,6 +5,7 @@ import { Search, TrendingUp, X, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getStrapiMedia } from "@/lib/api";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 // Helper: extract cover URL from various Strapi response formats
 function extractCoverUrl(cover: any): string | null {
@@ -64,6 +65,11 @@ async function fetchHotSearches(): Promise<HotSearch[]> {
 }
 
 function logSearch(keyword: string) {
+    // GA4 Track
+    trackEvent(EVENTS.SEARCH, {
+        search_term: keyword
+    });
+
     // Fire-and-forget: don't await, don't block UI
     fetch(`${STRAPI_URL}/api/stories/search-log`, {
         method: "POST",

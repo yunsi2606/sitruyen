@@ -9,6 +9,7 @@ import { CommentSection } from "@/components/CommentSection";
 import { ReaderControls } from "@/components/ReaderControls";
 import { chapterService, historyService } from "@/services/api";
 import { auth } from "@/lib/auth";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 interface MangaReaderProps {
     manga: Manga;
@@ -46,6 +47,14 @@ export function MangaReader({ manga, chapter }: MangaReaderProps) {
 
         // Increment view count
         chapterService.markAsRead(Number(chapter.id), token);
+
+        // Track GA4 event
+        trackEvent(EVENTS.READ_CHAPTER, {
+            manga_title: manga.title,
+            manga_slug: manga.slug,
+            chapter_title: chapter.title,
+            chapter_number: chapter.number
+        });
 
         // Save History (if logged in)
         if (user && token) {

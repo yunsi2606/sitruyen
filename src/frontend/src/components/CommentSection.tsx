@@ -9,6 +9,7 @@ import { commentService, storyService, chapterService, stickerService, userLevel
 import { StickerPicker } from "./StickerPicker";
 import { StickerDisplay } from "./StickerDisplay";
 import { AvatarFrame } from "./AvatarFrame";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 interface CommentSectionProps {
     storyId: number;
@@ -136,6 +137,20 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
             const res = await commentService.createComment(payload, token);
 
             if (res.data) {
+                // GA4 Tracking
+                if (selectedSticker) {
+                    trackEvent(EVENTS.SELECT_STICKER, {
+                        sticker_id: selectedSticker.id,
+                        story_id: storyId,
+                        chapter_id: chapterId
+                    });
+                }
+                trackEvent(EVENTS.POST_COMMENT, {
+                    story_id: storyId,
+                    chapter_id: chapterId,
+                    has_sticker: !!selectedSticker
+                });
+
                 setNewComment("");
                 setSelectedSticker(null);
                 setReplyTo(null);

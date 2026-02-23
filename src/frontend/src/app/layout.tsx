@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { ThemeProvider } from "@/components/theme-provider";
+import Script from "next/script";
 import "./globals.css";
 import "@/styles/animations.css";
 
@@ -15,6 +16,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-LWNE0EXJNZ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-LWNE0EXJNZ');
+          `}
+        </Script>
+      </head>
       <body className="flex flex-col min-h-screen bg-background font-sans text-foreground">
         <ThemeProvider
           attribute="class"

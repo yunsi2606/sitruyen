@@ -1,6 +1,7 @@
 
 import { ChapterList } from "@/components/ChapterList";
 import { CommentSection } from "@/components/CommentSection";
+import { TrackMangaView } from "@/components/TrackMangaView";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -115,6 +116,11 @@ export default async function MangaDetail(props: Params) {
 
     return (
         <div className="w-full max-w-[1280px] mx-auto space-y-12 animate-in fade-in-up duration-500 py-8 px-6">
+            <TrackMangaView
+                mangaId={manga.id}
+                mangaTitle={manga.title}
+                mangaSlug={manga.slug}
+            />
             {/* Hero Section */}
             <div className="flex flex-col md:flex-row gap-8 lg:gap-16 items-start">
 

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { auth } from "@/lib/auth";
 import { vipOrderService } from "@/services/api";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 // Plan Config
 const PLANS = [
@@ -114,6 +115,13 @@ export default function VipUpgradePage() {
                         clearInterval(pollRef.current!);
                         clearInterval(countdownRef.current!);
                         setPageState("success");
+
+                        // Track GA4
+                        trackEvent(EVENTS.UPGRADE_VIP, {
+                            plan_id: selectedPlan,
+                            amount: res.order.amount,
+                            order_code: res.order.order_code
+                        });
 
                         // Refresh user data in cookie
                         const updatedUser = { ...user, plan: "vip" };

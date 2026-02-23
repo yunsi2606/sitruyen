@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trackEvent, EVENTS } from "@/lib/gtag";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -24,6 +25,9 @@ export default function LoginPage() {
         try {
             const res = await auth.login(formData.identifier, formData.password);
             if (res.success) {
+                trackEvent(EVENTS.LOGIN, {
+                    method: 'email'
+                });
                 router.push("/");
                 router.refresh();
             } else {
