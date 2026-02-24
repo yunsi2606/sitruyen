@@ -26,14 +26,27 @@ const PORT = 3001;
 // Utility to delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function scrapeImages(url, outputDir, headless, socket) {
+// QUEUE STATE
+let jobs = [];
+let isProcessing = false;
+
+function broadcastQueue() {
+    io.emit('queue-updated', jobs);
+}
+
+function emitLog(jobId, type, message) {
+    const timestamp = new Date().toLocaleTimeString();
+    io.emit('log', { jobId, type, message, timestamp });
+}
+
+async function scrapeImages(job) {
     let browser;
     try {
-        socket.emit('log', `Launching browser for: ${url} (Headless: ${headless})`);
+        emitLog(job.id, 'info', `Launching browser for: ${job.url} (Headless: ${job.headless})`);
 
         // Launch options
         const launchOptions = {
-            headless: headless,
+            headless: job.headless,
             args: ['--start-maximized', '--disable-web-security']
         };
 
@@ -50,18 +63,18 @@ async function scrapeImages(url, outputDir, headless, socket) {
         // Block unnecessary resources to speed up but keep scripts/images
         await page.route('**/*.(font|woff|woff2)', route => route.abort());
 
-        socket.emit('log', 'Navigating to page...');
+        emitLog(job.id, 'info', 'Navigating to page...');
         try {
-            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await page.goto(job.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
         } catch (e) {
-            socket.emit('log', `Warning: Navigation timeout or error, continuing anyway... ${e.message}`);
+            emitLog(job.id, 'info', `Warning: Navigation timeout or error, continuing anyway... ${e.message}`);
         }
 
-        socket.emit('log', 'Waiting for initial content load...');
+        emitLog(job.id, 'info', 'Waiting for initial content load...');
         await delay(3000);
 
         // Smart Infinite Scroll
-        socket.emit('log', 'Starting smart scroll...');
+        emitLog(job.id, 'info', 'Starting smart scroll...');
         let lastHeight = await page.evaluate('document.body.scrollHeight');
         let scrollAttempts = 0;
         const maxScrollAttempts = 30;
@@ -79,10 +92,10 @@ async function scrapeImages(url, outputDir, headless, socket) {
             }
             lastHeight = newHeight;
             scrollAttempts++;
-            if (scrollAttempts % 5 === 0) socket.emit('log', `Scrolled... (Attempt ${scrollAttempts})`);
+            if (scrollAttempts % 5 === 0) emitLog(job.id, 'info', `Scrolled... (Attempt ${scrollAttempts})`);
         }
 
-        socket.emit('log', 'Scroll complete. Extracting images...');
+        emitLog(job.id, 'info', 'Scroll complete. Extracting images...');
 
         const imagePayloads = await page.evaluate(async () => {
             const results = [];
@@ -141,20 +154,18 @@ async function scrapeImages(url, outputDir, headless, socket) {
             return results;
         });
 
-        socket.emit('log', `Found ${imagePayloads.length} images.`);
+        emitLog(job.id, 'info', `Found ${imagePayloads.length} images.`);
 
         if (imagePayloads.length === 0) {
-            socket.emit('error', 'No images found. The site might be protected or content is hidden.');
-            // If headless was true, might need to suggest headful
-            if (headless) {
-                socket.emit('log', 'Tip: Try disabling "Headless Mode" to see if manual interaction is needed.');
-            }
-            return;
+            throw new Error('No images found. Site might be protected.');
         }
 
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
+        if (!fs.existsSync(job.outputDir)) {
+            fs.mkdirSync(job.outputDir, { recursive: true });
         }
+
+        job.progress.total = imagePayloads.length;
+        broadcastQueue();
 
         let downloadedCount = 0;
         for (let i = 0; i < imagePayloads.length; i++) {
@@ -167,7 +178,7 @@ async function scrapeImages(url, outputDir, headless, socket) {
             }
 
             const filename = `image_${String(i + 1).padStart(3, '0')}${safeExt}`;
-            const filePath = path.join(outputDir, filename);
+            const filePath = path.join(job.outputDir, filename);
 
             try {
                 if (payload.type === 'base64') {
@@ -178,8 +189,8 @@ async function scrapeImages(url, outputDir, headless, socket) {
                     // Critical Fix: Use page.evaluate to fetch inside the browser context
                     // This bypasses 403 errors by ensuring exact same headers/cookies/referer
                     try {
-                        const base64Content = await page.evaluate(async (url) => {
-                            const response = await fetch(url);
+                        const base64Content = await page.evaluate(async (u) => {
+                            const response = await fetch(u);
                             if (!response.ok) throw new Error(response.status);
                             const blob = await response.blob();
                             return new Promise((resolve, reject) => {
@@ -201,42 +212,92 @@ async function scrapeImages(url, outputDir, headless, socket) {
                             fs.writeFileSync(filePath, buffer);
                             downloadedCount++;
                         } else {
-                            socket.emit('log', `Failed to download ${payload.url}: ${fetchError.message || response.status()}`);
+                            emitLog(job.id, 'error', `Failed to download ${payload.url}: ${fetchError.message}`);
                         }
                     }
                 }
 
-                socket.emit('progress', {
-                    current: downloadedCount,
-                    total: imagePayloads.length,
-                    message: `Saved ${filename}`
-                });
+                job.progress.current = downloadedCount;
+                if (i % 5 === 0 || i === imagePayloads.length - 1) {
+                    broadcastQueue();
+                }
             } catch (e) {
-                socket.emit('log', `Error saving image ${i}: ${e.message}`);
+                emitLog(job.id, 'error', `Error saving image ${i}: ${e.message}`);
             }
         }
 
-        socket.emit('complete', `Successfully downloaded ${downloadedCount} images to ${outputDir}`);
+        emitLog(job.id, 'success', `Successfully downloaded ${downloadedCount} images to ${job.outputDir}`);
 
     } catch (error) {
-        socket.emit('error', `Critical Error: ${error.message}`);
-        console.error(error);
+        emitLog(job.id, 'error', `Critical Error: ${error.message}`);
+        throw error; // Re-throw to mark job as error
     } finally {
         if (browser) await browser.close();
     }
 }
 
+async function processQueue() {
+    if (isProcessing) return;
+
+    let nextJob = jobs.find(j => j.status === 'pending');
+    if (!nextJob) return;
+
+    isProcessing = true;
+
+    while (nextJob) {
+        nextJob.status = 'processing';
+        broadcastQueue();
+
+        try {
+            await scrapeImages(nextJob);
+            nextJob.status = 'completed';
+        } catch (error) {
+            nextJob.status = 'error';
+            nextJob.errorMsg = error.message;
+        }
+
+        broadcastQueue();
+        nextJob = jobs.find(j => j.status === 'pending');
+    }
+
+    isProcessing = false;
+    broadcastQueue();
+}
+
 io.on('connection', (socket) => {
     console.log('Client connected');
+    socket.emit('queue-updated', jobs);
 
-    socket.on('start-scrape', async (data) => {
-        // headless defaults to true if not provided
+    socket.on('add-job', (data) => {
         const { url, outputDir, headless = true } = data;
-        if (!url || !outputDir) {
-            socket.emit('error', 'Missing URL or Output Directory');
-            return;
+        if (!url || !outputDir) return;
+
+        const newJob = {
+            id: Date.now().toString() + Math.random().toString(36).substring(7),
+            url,
+            outputDir,
+            headless,
+            status: 'pending',
+            progress: { current: 0, total: 0 },
+            errorMsg: ''
+        };
+
+        jobs.push(newJob);
+        broadcastQueue();
+        processQueue(); // Start if not running
+    });
+
+    socket.on('remove-job', (id) => {
+        const index = jobs.findIndex(j => j.id === id);
+        if (index !== -1 && jobs[index].status !== 'processing') {
+            jobs.splice(index, 1);
+            broadcastQueue();
         }
-        await scrapeImages(url, outputDir, headless, socket);
+    });
+
+    socket.on('clear-completed', () => {
+        jobs = jobs.filter(j => j.status === 'pending' || j.status === 'processing');
+        broadcastQueue();
     });
 });
 
