@@ -1,15 +1,18 @@
 import { FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function TermsOfServicePage() {
+    const t = useTranslations("legal.terms");
+
     return (
         <div className="min-h-screen bg-[#141414] text-white font-sans pb-20 animate-in fade-in duration-700">
             {/* Header Section */}
             <div className="pt-24 px-6 max-w-[1280px] mx-auto mb-12 border-b border-white/5 pb-8">
                 <h1 className="text-3xl md:text-5xl font-black tracking-tighter flex items-center gap-4 mb-4 text-white">
-                    <FileText className="w-10 h-10 md:w-14 md:h-14 text-accent" /> Terms of Service
+                    <FileText className="w-10 h-10 md:w-14 md:h-14 text-accent" /> {t("title")}
                 </h1>
                 <p className="text-muted text-lg md:pl-[4.5rem] opacity-80 max-w-2xl">
-                    Please read these terms carefully before using our services.
+                    {t("subtitle")}
                 </p>
             </div>
 
@@ -19,76 +22,79 @@ export default function TermsOfServicePage() {
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        1. Acceptance of Terms
+                        {t("sections.s1.title")}
                     </h2>
                     <p>
-                        By accessing and using <strong>SiTruyen</strong> (the "Service"), you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.
+                        {t.rich("sections.s1.content", {
+                            strong: (chunks) => <strong>{chunks}</strong>
+                        })}
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        2. Description of Service
+                        {t("sections.s2.title")}
                     </h2>
                     <p>
-                        SiTruyen provides users with access to a rich collection of manga resources. You understand and agree that the Service is provided "AS-IS" and that SiTruyen assumes no responsibility for the timeliness, deletion, mis-delivery or failure to store any user communications or personalization settings.
+                        {t("sections.s2.content")}
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        3. User Conduct
+                        {t("sections.s3.title")}
                     </h2>
                     <p>
-                        You agree to not use the Service to:
+                        {t("sections.s3.content")}
                     </p>
                     <ul className="list-disc pl-6 space-y-2 marker:text-accent">
-                        <li>Upload, post, email, transmit or otherwise make available any content that is unlawful, harmful, threatening, abusive, harassing, or otherwise objectionable.</li>
-                        <li>Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a user or entity.</li>
-                        <li>Violate any applicable local, state, national or international law.</li>
-                        <li>Engage in any activity that interferes with or disrupts the Service.</li>
+                        {[0, 1, 2, 3].map((i) => (
+                            <li key={i}>{t(`sections.s3.list.${i}`)}</li>
+                        ))}
                     </ul>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        4. Intellectual Property
+                        {t("sections.s4.title")}
                     </h2>
                     <p>
-                        SiTruyen respects the intellectual property of others, and we ask our users to do the same. The content available on the site is for personal, non-commercial use only. All rights, titles, and interests not expressly granted are reserved.
+                        {t("sections.s4.content")}
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        5. Termination
+                        {t("sections.s5.title")}
                     </h2>
                     <p>
-                        We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+                        {t("sections.s5.content")}
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        6. Changes to Terms
+                        {t("sections.s6.title")}
                     </h2>
                     <p>
-                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms.
+                        {t("sections.s6.content")}
                     </p>
                 </section>
 
                 <section className="space-y-4 pb-12">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <span className="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_rgba(var(--accent),0.5)]" />
-                        7. Contact Us
+                        {t("sections.s7.title")}
                     </h2>
                     <p>
-                        If you have any questions about these Terms, please contact us at <a href="mailto:terms@sitruyen.com" className="text-accent hover:underline">terms@sitruyen.com</a>.
+                        {t.rich("sections.s7.content", {
+                            email: (chunks) => <a href="mailto:terms@sitruyen.com" className="text-accent hover:underline">{chunks}</a>
+                        })}
                     </p>
                 </section>
             </div>

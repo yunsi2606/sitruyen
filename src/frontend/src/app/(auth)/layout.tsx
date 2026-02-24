@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
-export default function AuthLayout({
+export default async function AuthLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const t = await getTranslations("auth");
+    const tc = await getTranslations("common");
+
     return (
         <div className="min-h-screen grid lg:grid-cols-2 bg-background text-foreground">
             {/* Left: Content/Form Section */}
@@ -17,7 +21,7 @@ export default function AuthLayout({
                         className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors absolute top-8 left-8 lg:top-12 lg:left-12"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Home
+                        {tc("backToHome")}
                     </Link>
 
                     {/* Additional decorative element if needed, but keeping it clean */}
@@ -28,10 +32,10 @@ export default function AuthLayout({
                     {/* Footer/Links */}
                     <div className="pt-6 text-center text-xs text-muted/60">
                         <p>
-                            By continuing, you agree to our{" "}
-                            <Link href="/terms" className="underline hover:text-white transition-colors">Terms of Service</Link>
-                            {" "}and{" "}
-                            <Link href="/privacy" className="underline hover:text-white transition-colors">Privacy Policy</Link>.
+                            {t("byConStart")}{" "}
+                            <Link href="/terms" className="underline hover:text-white transition-colors">{tc("termsOfService")}</Link>
+                            {" "}{t("byConAnd")}{" "}
+                            <Link href="/privacy" className="underline hover:text-white transition-colors">{tc("privacyPolicy")}</Link>.
                         </p>
                     </div>
                 </div>
@@ -51,7 +55,7 @@ export default function AuthLayout({
                         Si<span className="text-accent">Truyen</span>
                     </h2>
                     <p className="text-lg text-muted md:text-xl font-light leading-relaxed">
-                        Your ultimate destination for endless manga adventures. Join our community and start your journey today.
+                        {t("heroTagline")}
                     </p>
                 </div>
 

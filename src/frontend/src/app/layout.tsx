@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
-import { ThemeProvider } from "@/components/theme-provider";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import Script from "next/script";
 import "./globals.css";
 import "@/styles/animations.css";
@@ -9,13 +10,16 @@ export const metadata = {
   description: 'Read manga online for free in high quality. Updated daily with new chapters.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+    <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-LWNE0EXJNZ"
@@ -24,27 +28,24 @@ export default function RootLayout({
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+            window.gtag = function gtag(){window.dataLayer.push(arguments);}
+            window.gtag('js', new Date());
 
-            gtag('config', 'G-LWNE0EXJNZ');
+            window.gtag('config', 'G-LWNE0EXJNZ', {
+              debug_mode: true
+            });
           `}
         </Script>
       </head>
       <body className="flex flex-col min-h-screen bg-background font-sans text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Header />
           {/* Main Layout Container - Fluid to allow full-width heroes/bands */}
           <main className="flex-1 w-full fade-in-up">
             {children}
           </main>
           {/* Footer removed here, managed by page or added back later as global component */}
-        </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

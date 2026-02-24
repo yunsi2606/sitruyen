@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"; // assuming cn utility available or inline
 import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
 import { Manga, Chapter } from "@/types";
+import { getTranslations } from "next-intl/server";
 
 interface Params {
     params: Promise<{
@@ -85,8 +86,9 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
         ? [...manga.chapters].sort((a, b) => b.number - a.number)[0]
         : null;
 
+    const t = await getTranslations("manga");
     const titleSuffix = latestChapter
-        ? ` [tới Chapter ${latestChapter.number}]`
+        ? ` [${t('toChapter')} ${latestChapter.number}]`
         : '';
 
     return {
@@ -110,6 +112,9 @@ export default async function MangaDetail(props: Params) {
 
     // Sort chapters
     const sortedChapters = [...manga.chapters].sort((a, b) => b.number - a.number);
+
+    const t = await getTranslations("manga");
+    const tc = await getTranslations("common");
 
     const latestChapter = sortedChapters[0];
     const firstChapter = sortedChapters[sortedChapters.length - 1];
@@ -154,7 +159,7 @@ export default async function MangaDetail(props: Params) {
                             </div>
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full border border-blue-500/20 font-medium text-sm">
                                 <Eye className="w-4 h-4" />
-                                {manga.view_count ? new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(manga.view_count) : 0} Views
+                                {manga.view_count ? new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(manga.view_count) : 0} {t('views')}
                             </div>
                             <div className={cn(
                                 "flex items-center gap-1.5 px-3 py-1 rounded-full border font-medium text-sm",
@@ -163,7 +168,7 @@ export default async function MangaDetail(props: Params) {
                                     : "bg-blue-500/10 text-blue-500 border-blue-500/20"
                             )}>
                                 <Clock className="w-4 h-4" />
-                                {manga.status}
+                                {manga.status === 'Completed' ? t('completed') : t('ongoing')}
                             </div>
                             {manga.genres.map((g) => (
                                 <span key={g} className="px-3 py-1 bg-white/5 hover:bg-white/10 text-muted hover:text-white text-sm rounded-full border border-white/10 transition-colors cursor-default">
@@ -184,7 +189,7 @@ export default async function MangaDetail(props: Params) {
                             className="inline-flex items-center gap-2 px-8 py-4 bg-accent text-white font-bold text-lg rounded-xl shadow-lg shadow-accent/25 hover:bg-accent/90 hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300"
                         >
                             <Play className="w-5 h-5 fill-current" />
-                            Start Reading
+                            {t('startReading')}
                         </Link>
 
                         {latestChapter && (
@@ -193,7 +198,7 @@ export default async function MangaDetail(props: Params) {
                                 className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 text-white border border-white/10 font-semibold text-lg rounded-xl hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"
                             >
                                 <BookOpen className="w-5 h-5" />
-                                Read Latest (Ch. {latestChapter.number})
+                                {t('readLatest')} (Ch. {latestChapter.number})
                             </Link>
                         )}
                     </div>
@@ -205,10 +210,10 @@ export default async function MangaDetail(props: Params) {
                 <div className="flex items-center justify-between">
                     <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3 text-white">
                         <ListChecks className="w-8 h-8 text-accent" />
-                        Chapters
+                        {t('chapters')}
                     </h2>
                     <span className="text-sm font-medium text-muted bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
-                        Total: {manga.chapters.length}
+                        {t('total')}: {manga.chapters.length}
                     </span>
                 </div>
 

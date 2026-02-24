@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { trackEvent, EVENTS } from "@/lib/gtag";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,6 +17,8 @@ export default function LoginPage() {
         identifier: "",
         password: ""
     });
+    const t = useTranslations("auth");
+    const tc = useTranslations("common");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,10 +34,10 @@ export default function LoginPage() {
                 router.push("/");
                 router.refresh();
             } else {
-                setError(res.error || "Invalid username or password");
+                setError(res.error || t("loginFailed"));
             }
         } catch (err) {
-            setError("Unable to connect to server. Please try again later.");
+            setError(t("loginFailed"));
         } finally {
             setLoading(false);
         }
@@ -44,10 +47,10 @@ export default function LoginPage() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2 text-center">
                 <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl text-white">
-                    Welcome back
+                    {t("welcomeBack")}
                 </h1>
                 <p className="text-muted text-lg">
-                    Manga? Check. Snacks? Check. Login!
+                    {t("signInDescription")}
                 </p>
             </div>
 
@@ -58,7 +61,7 @@ export default function LoginPage() {
                         htmlFor="email"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                     >
-                        Email
+                        {t("emailAddress")}
                     </label>
                     <div className="relative group">
                         <input
@@ -82,13 +85,13 @@ export default function LoginPage() {
                             htmlFor="password"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                         >
-                            Password
+                            {t("password")}
                         </label>
                         <Link
                             href="/forgot-password"
                             className="text-sm font-medium text-muted hover:text-accent transition-colors"
                         >
-                            Forgot password?
+                            {t("forgotPassword")}
                         </Link>
                     </div>
                     <div className="relative group">
@@ -122,10 +125,10 @@ export default function LoginPage() {
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Signing In...
+                            {t("signingIn")}
                         </>
                     ) : (
-                        <>Sign In <ArrowRight className="ml-2 w-4 h-4" /></>
+                        <>{tc("signIn")} <ArrowRight className="ml-2 w-4 h-4" /></>
                     )}
                 </button>
             </form>
@@ -136,18 +139,18 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-4 text-muted font-medium">
-                        Or
+                        {tc("or")}
                     </span>
                 </div>
             </div>
 
             <p className="px-8 text-center text-sm text-muted">
-                New here?{" "}
+                {t("dontHaveAccount")}{" "}
                 <Link
                     href="/register"
                     className="underline underline-offset-4 hover:text-accent font-semibold text-white transition-colors"
                 >
-                    Create an account
+                    {t("createOne")}
                 </Link>
             </p>
         </div>

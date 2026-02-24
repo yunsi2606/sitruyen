@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { trackEvent, EVENTS } from "@/lib/gtag";
+import { useTranslations } from "next-intl";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -17,6 +18,8 @@ export default function RegisterPage() {
         email: "",
         password: ""
     });
+    const t = useTranslations("auth");
+    const tc = useTranslations("common");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,10 +35,10 @@ export default function RegisterPage() {
                 router.push("/");
                 router.refresh();
             } else {
-                setError(res.error || "Please check your details and try again.");
+                setError(res.error || t("registerFailed"));
             }
         } catch (err) {
-            setError("Unable to connect. Please check your internet connection.");
+            setError(t("registerFailed"));
         } finally {
             setLoading(false);
         }
@@ -45,10 +48,10 @@ export default function RegisterPage() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="space-y-2 text-center">
                 <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl text-white">
-                    Create account
+                    {t("createAccount")}
                 </h1>
                 <p className="text-muted text-lg">
-                    Start your reading journey today. It's free!
+                    {t("createAccountDescription")}
                 </p>
             </div>
 
@@ -59,7 +62,7 @@ export default function RegisterPage() {
                         htmlFor="username"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                     >
-                        Username
+                        {t("username")}
                     </label>
                     <input
                         id="username"
@@ -80,7 +83,7 @@ export default function RegisterPage() {
                         htmlFor="email"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                     >
-                        Email
+                        {t("emailAddress")}
                     </label>
                     <input
                         id="email"
@@ -102,7 +105,7 @@ export default function RegisterPage() {
                         htmlFor="password"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                     >
-                        Password
+                        {t("password")}
                     </label>
                     <input
                         id="password"
@@ -133,11 +136,11 @@ export default function RegisterPage() {
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Account...
+                            {t("creatingAccount")}
                         </>
                     ) : (
                         <>
-                            Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                            {tc("signUp")} <ArrowRight className="ml-2 h-4 w-4" />
                         </>
                     )}
                 </button>
@@ -149,18 +152,18 @@ export default function RegisterPage() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-4 text-muted font-medium">
-                        Or
+                        {tc("or")}
                     </span>
                 </div>
             </div>
 
             <p className="px-8 text-center text-sm text-muted">
-                Already have an account?{" "}
+                {t("alreadyHaveAccount")}{" "}
                 <Link
                     href="/login"
                     className="underline underline-offset-4 hover:text-accent font-semibold text-white transition-colors"
                 >
-                    Sign in
+                    {tc("signIn")}
                 </Link>
             </p>
         </div>

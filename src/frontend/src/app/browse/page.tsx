@@ -10,21 +10,38 @@ import { Star, Clock, Filter, ChevronDown, List, Grid, Search, SlidersHorizontal
 import { cn } from '@/lib/utils';
 import { Manga } from '@/types';
 import { trackEvent, EVENTS } from '@/lib/gtag';
+import { useTranslations } from 'next-intl';
 
-const SORT_OPTIONS = [
-    { label: 'Latest Updates', value: 'updatedAt:desc' },
-    { label: 'Most Popular', value: 'view_count:desc' },
-    { label: 'New Arrivals', value: 'createdAt:desc' },
-    { label: 'Name A-Z', value: 'title:asc' },
-];
+// Localized in component using hooks
+const SORT_VALUE_MAP: Record<string, string> = {
+    'updatedAt:desc': 'latestUpdate',
+    'view_count:desc': 'mostPopular',
+    'createdAt:desc': 'newArrivals',
+    'title:asc': 'nameAZ'
+};
 
-const STATUS_OPTIONS = [
-    { label: 'Any Status', value: '' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Completed', value: 'Completed' },
-];
+const STATUS_VALUE_MAP: Record<string, string> = {
+    '': 'anyStatus',
+    'Ongoing': 'ongoing',
+    'Completed': 'completed'
+};
 
 export default function BrowsePage() {
+    const t = useTranslations('browse');
+    const tc = useTranslations('common');
+
+    const SORT_OPTIONS = [
+        { label: t('latestUpdate'), value: 'updatedAt:desc' },
+        { label: t('mostPopular'), value: 'view_count:desc' },
+        { label: t('newArrivals'), value: 'createdAt:desc' },
+        { label: t('nameAZ'), value: 'title:asc' },
+    ];
+
+    const STATUS_OPTIONS = [
+        { label: t('anyStatus'), value: '' },
+        { label: t('ongoing'), value: 'Ongoing' },
+        { label: t('completed'), value: 'Completed' },
+    ];
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -179,18 +196,18 @@ export default function BrowsePage() {
                             <Grid className="w-8 h-8 text-accent" />
                             {searchQuery.trim() ? (
                                 <>
-                                    Search: <span className="text-accent">&ldquo;{searchQuery}&rdquo;</span>
+                                    {t('searchTitle')}: <span className="text-accent">&ldquo;{searchQuery}&rdquo;</span>
                                 </>
-                            ) : 'Browse Manga'}
+                            ) : t('title')}
                         </h1>
                         <div className="flex items-center gap-3 mt-1">
-                            <p className="text-muted text-sm">Found {pagination.total} titles</p>
+                            <p className="text-muted text-sm">{t('foundTitles', { count: pagination.total })}</p>
                             {searchQuery.trim() && (
                                 <button
                                     onClick={() => { setSearchQuery(''); setPage(1); }}
                                     className="text-xs text-accent hover:underline flex items-center gap-1"
                                 >
-                                    × Clear search
+                                    {t('clearSearch')}
                                 </button>
                             )}
                         </div>
@@ -202,7 +219,7 @@ export default function BrowsePage() {
                         <form onSubmit={handleSearch} className="relative group">
                             <input
                                 type="text"
-                                placeholder="Search titles..."
+                                placeholder={t('searchPlaceholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="bg-surface border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-1 focus:ring-accent outline-none w-[200px] focus:w-[260px] transition-all duration-300"
@@ -214,7 +231,7 @@ export default function BrowsePage() {
                         <div className="relative group/status">
                             <button className="flex items-center gap-2 px-4 py-2.5 bg-surface border border-white/10 rounded-xl text-sm font-medium text-white hover:border-white/20 transition-colors">
                                 <Filter className="w-4 h-4" />
-                                <span>{STATUS_OPTIONS.find(o => o.value === statusFilter)?.label || 'Any Status'}</span>
+                                <span>{STATUS_OPTIONS.find(o => o.value === statusFilter)?.label || t('anyStatus')}</span>
                                 <ChevronDown className="w-4 h-4 text-muted" />
                             </button>
                             <div className="absolute right-0 top-full mt-2 w-40 bg-surface border border-white/10 rounded-xl shadow-xl py-2 invisible opacity-0 translate-y-2 group-hover/status:visible group-hover/status:opacity-100 group-hover/status:translate-y-0 transition-all z-50">
@@ -264,7 +281,7 @@ export default function BrowsePage() {
                     <aside className="hidden lg:block w-64 flex-shrink-0 space-y-8 h-fit sticky top-24 animate-in fade-in-left duration-500">
                         <div className="bg-surface rounded-2xl border border-white/5 p-5">
                             <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-                                <List className="w-4 h-4 text-accent" /> Genres
+                                <List className="w-4 h-4 text-accent" /> {t('genres')}
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 <button
@@ -276,7 +293,7 @@ export default function BrowsePage() {
                                             : "bg-background text-muted border-white/5 hover:border-white/20 hover:text-white"
                                     )}
                                 >
-                                    All
+                                    {t('all')}
                                 </button>
                                 {genres.map((g: any) => (
                                     <button
@@ -321,7 +338,7 @@ export default function BrowsePage() {
                                                     "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md text-white/90",
                                                     manga.status === 'Completed' ? "bg-blue-500/80" : "bg-green-500/80"
                                                 )}>
-                                                    {manga.status}
+                                                    {manga.status === 'Completed' ? tc('completed') : tc('ongoing')}
                                                 </span>
                                             </div>
 
@@ -339,7 +356,7 @@ export default function BrowsePage() {
                                                 <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
                                                     <span className="truncate max-w-[80px]">{manga.genres[0]}</span>
                                                     <span>•</span>
-                                                    <span>{manga.chapters?.length || 0} Ch</span>
+                                                    <span>{manga.chapters?.length || 0} {tc('chapter').toLowerCase()[0]}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -351,15 +368,15 @@ export default function BrowsePage() {
                                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
                                     <Search className="w-8 h-8 text-muted" />
                                 </div>
-                                <h3 className="text-xl font-bold text-white">No manga found</h3>
+                                <h3 className="text-xl font-bold text-white">{t('noResults')}</h3>
                                 <p className="text-muted text-sm mt-2 max-w-md">
-                                    We couldn't find any manga matching your criteria. Try different filters or search keywords.
+                                    {t('noResultsDescription') || "We couldn't find any manga matching your criteria. Try different filters or search keywords."}
                                 </p>
                                 <button
                                     onClick={() => { setSelectedGenre(''); setSearchQuery(''); setStatusFilter(''); }}
                                     className="mt-6 px-6 py-2 bg-accent text-white font-medium rounded-xl hover:bg-accent/90 transition-colors"
                                 >
-                                    Clear Filters
+                                    {t('clearFilters')}
                                 </button>
                             </div>
                         )}
@@ -375,7 +392,7 @@ export default function BrowsePage() {
                                     <ArrowLeft className="w-4 h-4" />
                                 </button>
                                 <span className="text-sm text-muted font-mono">
-                                    Page <span className="text-white font-bold">{page}</span> of {pagination.pageCount}
+                                    {t('pageOf', { current: page, total: pagination.pageCount })}
                                 </span>
                                 <button
                                     onClick={() => setPage(p => Math.min(pagination.pageCount, p + 1))}

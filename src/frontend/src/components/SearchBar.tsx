@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getStrapiMedia } from "@/lib/api";
 import { trackEvent, EVENTS } from "@/lib/gtag";
+import { useTranslations } from "next-intl";
 
 // Helper: extract cover URL from various Strapi response formats
 function extractCoverUrl(cover: any): string | null {
@@ -102,7 +103,10 @@ interface SearchBarProps {
     className?: string;
 }
 
-export function SearchBar({ variant = "inline", placeholder = "Search manga, author...", className = "" }: SearchBarProps) {
+export function SearchBar({ variant = "inline", placeholder, className = "" }: SearchBarProps) {
+    const ts = useTranslations("search");
+    const tc = useTranslations("common");
+    const resolvedPlaceholder = placeholder || ts("placeholder");
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -208,10 +212,10 @@ export function SearchBar({ variant = "inline", placeholder = "Search manga, aut
                         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
                         onFocus={() => setOpen(true)}
                         onKeyDown={handleKeyDown}
-                        placeholder={placeholder}
+                        placeholder={resolvedPlaceholder}
                         autoComplete="off"
                         className="flex-1 bg-transparent outline-none text-base text-white placeholder-muted"
-                        aria-label="Search manga"
+                        aria-label={ts("searchManga")}
                         aria-autocomplete="list"
                         aria-expanded={showDropdown}
                     />
@@ -224,7 +228,7 @@ export function SearchBar({ variant = "inline", placeholder = "Search manga, aut
                         onClick={handleSubmit}
                         className="px-5 py-2 bg-accent text-white rounded-xl font-semibold text-sm hover:bg-accent/90 transition-colors flex-shrink-0"
                     >
-                        Search
+                        {tc("search")}
                     </button>
                 </div>
                 <SearchDropdown
@@ -310,6 +314,8 @@ function SearchDropdown({
     onHotClick,
     onSuggestionClick,
 }: DropdownProps) {
+    const ts = useTranslations("search");
+    const tc = useTranslations("common");
     if (!show) return null;
 
     return (
@@ -323,7 +329,7 @@ function SearchDropdown({
                     {loading ? (
                         <div className="px-4 py-6 flex items-center justify-center gap-2 text-sm text-muted">
                             <span className="w-4 h-4 border-2 border-accent/40 border-t-accent rounded-full animate-spin" />
-                            Searching...
+                            {ts("searching")}
                         </div>
                     ) : suggestions.length > 0 ? (
                         <ul>
@@ -354,7 +360,7 @@ function SearchDropdown({
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium truncate text-white">{s.title}</p>
                                             {s.view_count ? (
-                                                <p className="text-xs text-muted">{fmtViews(s.view_count)} views</p>
+                                                <p className="text-xs text-muted">{fmtViews(s.view_count)} {tc("views")}</p>
                                             ) : null}
                                         </div>
                                         {/* Rating */}
@@ -367,7 +373,7 @@ function SearchDropdown({
                         </ul>
                     ) : (
                         <div className="px-4 py-6 text-sm text-muted text-center">
-                            No results found
+                            {ts("noResults")}
                         </div>
                     )}
                 </div>
@@ -378,7 +384,7 @@ function SearchDropdown({
                 <div className="p-4">
                     <div className="flex items-center gap-2 mb-3">
                         <TrendingUp className="w-4 h-4 text-accent" />
-                        <span className="text-xs font-bold text-white uppercase tracking-wider">Trending Searches</span>
+                        <span className="text-xs font-bold text-white uppercase tracking-wider">{ts("trendingSearches")}</span>
                         <span className="ml-auto text-[10px] text-muted">24h</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -404,7 +410,7 @@ function SearchDropdown({
             {!showHot && !showSuggestions && !loading && (
                 <div className="px-4 py-5 flex items-center gap-2 text-sm text-muted">
                     <Clock className="w-4 h-4" />
-                    <span>Start typing to search...</span>
+                    <span>{ts("startTyping")}</span>
                 </div>
             )}
         </div>

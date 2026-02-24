@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Play, BookOpen, Star } from "lucide-react";
 import { getStrapiMedia } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface HeroItem {
     id: number;
@@ -35,6 +36,7 @@ function getDescription(description: any): string {
 export function HeroSlider({ items }: HeroSliderProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const tc = useTranslations("common");
 
     const nextSlide = useCallback(() => {
         setCurrentIndex((prev) => (prev + 1) % items.length);
@@ -109,7 +111,7 @@ export function HeroSlider({ items }: HeroSliderProps) {
                                     >
                                         <div className="flex items-center gap-3">
                                             <span className="px-3 py-1 bg-accent/90 text-white text-[10px] md:text-xs font-bold uppercase tracking-wider rounded-full shadow-lg shadow-accent/25">
-                                                Featured
+                                                {tc("featured")}
                                             </span>
                                             <span className="flex items-center gap-1 text-yellow-500 font-bold text-sm">
                                                 <Star className="w-4 h-4 fill-current" /> {item.rating || 4.9}
@@ -126,7 +128,7 @@ export function HeroSlider({ items }: HeroSliderProps) {
 
                                         <div className="flex flex-wrap gap-4 pt-2 md:pt-4">
                                             <Link href={`/manga/${item.slug}`} className="flex items-center gap-2 px-6 md:px-8 py-3 bg-accent text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all text-sm md:text-base">
-                                                <Play className="w-4 h-4 md:w-5 md:h-5 fill-current" /> Read Now
+                                                <Play className="w-4 h-4 md:w-5 md:h-5 fill-current" /> {tc("readNow")}
                                             </Link>
                                             <Link href={`/manga/${item.slug}`} className="flex items-center gap-2 px-6 md:px-8 py-3 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm text-sm md:text-base">
                                                 <BookOpen className="w-4 h-4 md:w-5 md:h-5" /> View Info

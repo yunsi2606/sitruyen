@@ -1,0 +1,438 @@
+{
+    "common": {
+        "readNow": "Read Now",
+        "read": "Read",
+        "search": "Search",
+        "login": "Login",
+        "logout": "Logout",
+        "signUp": "Sign up",
+        "signIn": "Sign in",
+        "cancel": "Cancel",
+        "submit": "Submit",
+        "loading": "Loading...",
+        "views": "views",
+        "viewAll": "View All",
+        "continue": "Continue",
+        "upgrade": "Upgrade",
+        "previous": "Previous",
+        "next": "Next",
+        "backToHome": "Back to Home",
+        "or": "Or",
+        "save": "Save",
+        "close": "Close",
+        "goHome": "Go Home",
+        "browseManga": "Browse Manga",
+        "chapter": "Chapter",
+        "rank": "Rank",
+        "vip": "VIP",
+        "locked": "Locked",
+        "featured": "Featured",
+        "allRightsReserved": "All rights reserved.",
+        "termsOfService": "Terms of Service",
+        "privacyPolicy": "Privacy Policy",
+        "dmca": "DMCA",
+        "startReading": "Start Reading",
+        "recently": "Recently"
+    },
+    "nav": {
+        "home": "Home",
+        "latest": "Latest",
+        "popular": "Popular",
+        "genres": "Genres",
+        "popularGenres": "Popular Genres",
+        "viewAllGenres": "View All Genres →",
+        "quickAccess": "Quick Access",
+        "topThisWeek": "Top this week",
+        "newReleases": "New Releases",
+        "completedSeries": "Completed Series",
+        "featured": "Featured",
+        "readNow": "Read Now",
+        "goPremium": "Go Premium",
+        "profile": "Profile"
+    },
+    "home": {
+        "trendingNow": "Trending Now",
+        "latestUpdates": "Latest Updates",
+        "updatedJustNow": "Updated: Just Now",
+        "popularThisWeek": "Popular This Week",
+        "readPopularManga": "Read the popular manga {title} on SiTruyen. High quality images and fast updates.",
+        "unableToLoad": "Unable to load content. Please check the backend connection.",
+        "timeAgo": "{time} ago"
+    },
+    "browse": {
+        "title": "Browse Manga",
+        "searchPlaceholder": "Search manga...",
+        "sortBy": "Sort by",
+        "genre": "Genre",
+        "status": "Status",
+        "allGenres": "All Genres",
+        "allStatus": "All Status",
+        "ongoing": "Ongoing",
+        "completed": "Completed",
+        "latestUpdate": "Latest Update",
+        "mostPopular": "Most Popular",
+        "newest": "Newest",
+        "noResults": "No manga found.",
+        "results": "results",
+        "showing": "Showing",
+        "of": "of",
+        "searchTitle": "Search",
+        "foundTitles": "Found {count} titles",
+        "clearSearch": "Clear search",
+        "anyStatus": "Any Status",
+        "newArrivals": "New Arrivals",
+        "nameAZ": "Name A-Z",
+        "all": "All",
+        "clearFilters": "Clear Filters",
+        "pageOf": "Page {current} of {total}",
+        "genres": "Genres"
+    },
+    "manga": {
+        "startReading": "Start Reading",
+        "continueReading": "Continue Reading",
+        "description": "Description",
+        "information": "Information",
+        "author": "Author",
+        "status": "Status",
+        "views": "Views",
+        "rating": "Rating",
+        "type": "Type",
+        "chapters": "Chapters",
+        "comments": "Comments",
+        "manga": "MANGA",
+        "manhwa": "MANHWA",
+        "manhua": "MANHUA",
+        "ongoing": "Ongoing",
+        "completed": "Completed",
+        "unknown": "Unknown",
+        "noDescription": "No description available for this manga.",
+        "categories": "Categories",
+        "alternativeTitles": "Alternative Titles",
+        "readLatest": "Read Latest",
+        "toChapter": "to Chapter",
+        "total": "Total"
+    },
+    "reader": {
+        "readingMode": "Reading Mode",
+        "verticalScroll": "Vertical Scroll",
+        "paginated": "Paginated (BETA)",
+        "reportIssue": "Report Issue",
+        "failedToLoad": "Failed to load image",
+        "scrollToTop": "Scroll to Top",
+        "chapterNavigation": "Chapter Navigation",
+        "allChapters": "All Chapters",
+        "loadingChapter": "Loading chapter...",
+        "previous": "Previous",
+        "next": "Next",
+        "noImages": "No images available for this chapter.",
+        "paginationModeSoon": "Pagination mode coming soon."
+    },
+    "chapters": {
+        "searchPlaceholder": "Search chapter number...",
+        "showing": "Showing",
+        "showingStats": "Showing {count} of {total} chapters",
+        "of": "of",
+        "chapters": "chapters",
+        "containsVipChapters": "Contains VIP Chapters",
+        "getInstantAccess": "Get instant access to the latest releases without waiting.",
+        "vipBannerTitle": "Contains VIP Chapters",
+        "vipBannerDesc": "Get instant access to the latest releases without waiting.",
+        "upgradeBtn": "Upgrade",
+        "lockedLabel": "Locked",
+        "readLabel": "Read",
+        "noChaptersFound": "No chapters found matching \"{query}\""
+    },
+    "auth": {
+        "welcomeBack": "Welcome Back",
+        "signInDescription": "Sign in to continue reading your favorite stories.",
+        "createAccount": "Create Account",
+        "createAccountDescription": "Sign up to start your manga journey.",
+        "emailAddress": "Email address",
+        "password": "Password",
+        "username": "Username",
+        "dontHaveAccount": "Don't have an account?",
+        "createOne": "Create one",
+        "alreadyHaveAccount": "Already have an account?",
+        "forgotPassword": "Forgot password?",
+        "forgotPasswordTitle": "Forgot Password",
+        "forgotPasswordDescription": "No worries. We'll help you get back in.",
+        "sendResetLink": "Send Reset Link",
+        "rememberPassword": "Remember your password?",
+        "processing": "Processing...",
+        "signingIn": "Signing in...",
+        "creatingAccount": "Creating account...",
+        "byConStart": "By continuing, you agree to our",
+        "byConAnd": "and",
+        "heroTagline": "Your ultimate destination for endless manga adventures. Join our community and start your journey today.",
+        "underMaintenance": "This feature is currently under maintenance. Please contact support.",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "registerFailed": "Registration failed. Please try again."
+    },
+    "profile": {
+        "accountInfo": "Account Info",
+        "joinDate": "Join Date",
+        "title": "Title",
+        "expMultiplier": "EXP Multiplier",
+        "readingHistory": "Reading History",
+        "cosmeticsAndRewards": "Cosmetics & Rewards",
+        "avatarFrames": "Avatar Frames",
+        "nameColors": "Name Colors",
+        "dailyClaimed": "Daily Claimed",
+        "claimDaily": "Claim Daily (+20 EXP)",
+        "noReadingHistory": "No reading history yet.",
+        "level": "Level",
+        "novice": "Novice",
+        "alreadyClaimed": "You already claimed today!",
+        "claimed": "Claimed! +{exp} EXP",
+        "recentHistory": "Recent History",
+        "maxExp": "MAX",
+        "expLabel": "{current} / {total} EXP"
+    },
+    "history": {
+        "title": "Reading History",
+        "subtitle": "Continue reading your favorite stories.",
+        "loginRequired": "Login Required",
+        "loginDescription": "Please log in to track your reading history and continue reading from where you left off across all devices.",
+        "logIn": "Log In",
+        "noHistoryYet": "No History Yet",
+        "startReadingToBuild": "Start reading manga to build your library.",
+        "loadingHistory": "Loading reading history...",
+        "empty": "You haven't read any manga yet.",
+        "lastRead": "Last read",
+        "clearHistory": "Clear History"
+    },
+    "vip": {
+        "title": "Upgrade to Premium",
+        "subtitle": "Unlock all VIP content and enjoy the best reading experience.",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "yearly": "Yearly",
+        "lifetime": "Lifetime",
+        "perMonth": "/month",
+        "perQuarter": "/quarter",
+        "perYear": "/year",
+        "oneTime": "one-time",
+        "mostPopular": "Most Popular",
+        "bestValue": "Best Value",
+        "features": "Features included",
+        "readAllChapters": "Read all VIP chapters",
+        "noAds": "No advertisements",
+        "earlyAccess": "Early access to new chapters",
+        "vipBadge": "VIP Badge",
+        "prioritySupport": "Priority support",
+        "selectPlan": "Select Plan",
+        "scanQrToPay": "Scan QR to Pay",
+        "waitingForPayment": "Waiting for payment...",
+        "paymentSuccess": "Payment Successful!",
+        "paymentFailed": "Payment Failed",
+        "tryAgain": "Try Again",
+        "alreadyVip": "You are already a VIP member!",
+        "vipExpires": "VIP expires on",
+        "enjoyPremium": "Enjoy your Premium experience.",
+        "upgradeNow": "Upgrade Now",
+        "paymentInstructions": "Payment Instructions",
+        "amount": "Amount",
+        "orderCode": "Order Code",
+        "checkingPayment": "Checking payment..."
+    },
+    "report": {
+        "title": "Report Issue / Feedback",
+        "issueType": "Issue Type",
+        "imageBroken": "Broken Image / Not Loading",
+        "wrongContent": "Wrong Content / Chapter",
+        "translationIssue": "Translation Error / Typos",
+        "websiteBug": "UI / Feature Bug",
+        "vipIssue": "VIP Account Issue",
+        "otherFeedback": "Other Feedback",
+        "description": "Description",
+        "descriptionRequired": "Description *",
+        "descriptionPlaceholder": "Please describe the issue you encountered...",
+        "contactEmail": "Contact Email (Optional)",
+        "contactEmailPlaceholder": "For admin to contact you (if needed)",
+        "cancelBtn": "Cancel",
+        "submitReport": "Submit Report",
+        "sending": "Sending...",
+        "reportSubmitted": "Report Submitted!",
+        "thankYou": "Thank you for your feedback. We will check it soon.",
+        "submitFailed": "Failed to submit report. Please try again."
+    },
+    "footer": {
+        "tagline": "The ultimate destination for manga and webtoon lovers. Read high-quality scans for free, updated daily.",
+        "discover": "Discover",
+        "latestUpdates": "Latest Updates",
+        "mostPopular": "Most Popular",
+        "newArrivals": "New Arrivals",
+        "completedSeries": "Completed Series",
+        "account": "Account",
+        "signInRegister": "Sign In / Register",
+        "myLibrary": "My Library",
+        "readingHistory": "Reading History",
+        "settings": "Settings",
+        "stayUpdated": "Stay Updated",
+        "enterEmail": "Enter your email",
+        "subscribe": "Subscribe",
+        "copyright": "© 2026 SiTruyen. All rights reserved."
+    },
+    "search": {
+        "placeholder": "Search manga, author...",
+        "searching": "Searching...",
+        "noResults": "No results found",
+        "trendingSearches": "Trending Searches",
+        "startTyping": "Start typing to search...",
+        "searchManga": "Search manga"
+    },
+    "comment": {
+        "comments": "Comments",
+        "loginToComment": "Login to comment",
+        "writeComment": "Write a comment...",
+        "post": "Post",
+        "beFirst": "Be the first to comment!",
+        "noComments": "No comments yet.",
+        "posting": "Posting...",
+        "stickers": "Stickers",
+        "reply": "Reply",
+        "delete": "Delete",
+        "failedToLoad": "Failed to load comments.",
+        "replyingTo": "Replying to",
+        "joinDiscussion": "Join the discussion...",
+        "chars": "chars",
+        "logInRegister": "Log In / Register",
+        "loginToDiscuss": "Please log in to join the discussion.",
+        "loadingComments": "Loading comments..."
+    },
+    "errors": {
+        "pageNotFound": "Page Not Found",
+        "pageNotFoundDescription": "Oops! It seems you've ventured into unrelated territory. The page you are looking for doesn't exist or has been moved.",
+        "somethingWentWrong": "Something went wrong",
+        "tryAgain": "Try Again",
+        "goBack": "Go Back"
+    },
+    "legal": {
+        "terms": {
+            "title": "Terms of Service",
+            "subtitle": "Please read these terms carefully before using our services.",
+            "sections": {
+                "s1": {
+                    "title": "1. Acceptance of Terms",
+                    "content": "By accessing and using <strong>SiTruyen</strong> (the \"Service\"), you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services."
+                },
+                "s2": {
+                    "title": "2. Description of Service",
+                    "content": "SiTruyen provides users with access to a rich collection of manga resources. You understand and agree that the Service is provided \"AS-IS\" and that SiTruyen assumes no responsibility for the timeliness, deletion, mis-delivery or failure to store any user communications or personalization settings."
+                },
+                "s3": {
+                    "title": "3. User Conduct",
+                    "content": "You agree to not use the Service to:",
+                    "list": [
+                        "Upload, post, email, transmit or otherwise make available any content that is unlawful, harmful, threatening, abusive, harassing, or otherwise objectionable.",
+                        "Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a user or entity.",
+                        "Violate any applicable local, state, national or international law.",
+                        "Engage in any activity that interferes with or disrupts the Service."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Intellectual Property",
+                    "content": "SiTruyen respects the intellectual property of others, and we ask our users to do the same. The content available on the site is for personal, non-commercial use only. All rights, titles, and interests not expressly granted are reserved."
+                },
+                "s5": {
+                    "title": "5. Termination",
+                    "content": "We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms."
+                },
+                "s6": {
+                    "title": "6. Changes to Terms",
+                    "content": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms."
+                },
+                "s7": {
+                    "title": "7. Contact Us",
+                    "content": "If you have any questions about these Terms, please contact us at {email}."
+                }
+            }
+        },
+        "privacy": {
+            "title": "Privacy Policy",
+            "subtitle": "We value your privacy. This policy explains how we collect, use, and protect your personal information.",
+            "sections": {
+                "s1": {
+                    "title": "1. Introduction",
+                    "content": "Welcome to <strong>SiTruyen</strong> (\"we,\" \"our,\" or \"us\"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy applies to our website and all related services (collectively, the \"Service\"). By accessing or using our Service, you agree to the terms of this Privacy Policy."
+                },
+                "s2": {
+                    "title": "2. Information We Collect",
+                    "content": "We collect information that you provide securely to us. This may include:",
+                    "list": [
+                        "<strong>Personal Information:</strong> Name, email address, password, and other registration details.",
+                        "<strong>Usage Data:</strong> Information on how you interact with the Service, such as reading history, bookmarks, and preferences.",
+                        "<strong>Device Information:</strong> IP address, browser type, and operating system for security and analytics purposes."
+                    ]
+                },
+                "s3": {
+                    "title": "3. How We Use Your Information",
+                    "content": "We use the information we collect to:",
+                    "list": [
+                        "Provide, operate, and maintain our Service.",
+                        "Sync your reading progress and bookmarks across devices.",
+                        "Send you updates, security alerts, and support messages.",
+                        "Monitor usage patterns to improve user experience and performance."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Data Sharing and Security",
+                    "content": "We do not sell your personal data to third parties. We assume no ownership of your data but process it to provide the Service. We implement appropriate technical security measures to protect your personal information against unauthorized access, alteration, or destruction. However, no method of transmission over the Internet is 100% secure."
+                },
+                "s5": {
+                    "title": "5. Cookies and Tracking",
+                    "content": "We use cookies and similar tracking technologies to track the activity on our Service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent."
+                },
+                "s6": {
+                    "title": "6. Contact Us",
+                    "content": "If you have any questions about this Privacy Policy, please contact us at {email}."
+                }
+            }
+        },
+        "dmca": {
+            "title": "DMCA Copyright",
+            "subtitle": "Digital Millennium Copyright Act Notification Guidelines.",
+            "sections": {
+                "s1": {
+                    "title": "1. DMCA Notice",
+                    "content1": "<strong>SiTruyen</strong> respects the intellectual property rights of others. We comply with the Digital Millennium Copyright Act (DMCA) and other applicable copyright laws. It is our policy to respond to any infringement notices and take appropriate actions under the Digital Millennium Copyright Act and other applicable intellectual property laws.",
+                    "content2": "If your copyrighted material has been posted on SiTruyen or if links to your copyrighted material are returned through our search engine and you want this material removed, you must provide a written communication that details the information listed in the following section."
+                },
+                "s2": {
+                    "title": "2. Takedown Procedure",
+                    "content": "To file a DMCA copyright infringement notification, please send us a written notice containing the following information:",
+                    "list": [
+                        "Physical or electronic signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.",
+                        "Identification of the copyrighted work claimed to have been infringed.",
+                        "Identification of the material that is claimed to be infringing or to be the subject of infringing activity and that is to be removed.",
+                        "Information reasonably sufficient to permit us to contact the complaining party, such as an address, telephone number, and, if available, an electronic mail address.",
+                        "A statement that the complaining party has a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law."
+                    ]
+                },
+                "s3": {
+                    "title": "3. Counter-Notification",
+                    "content": "If you believe that your content that was removed (or to which access was disabled) is not infringing, or that you have the authorization from the copyright owner, the copyright owner's agent, or pursuant to the law, to post and use the material in your content, you may send a counter-notice containing the following information to our Copyright Agent:",
+                    "list": [
+                        "Your physical or electronic signature.",
+                        "Identification of the content that has been removed or to which access has been disabled.",
+                        "Your statement that you have a good faith belief that the content was removed as a result of mistake or a misidentification of the content.",
+                        "Your name, address, telephone number, and e-mail address."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Disclaimer",
+                    "content": "Please be aware that if you knowingly misrepresent that material or activity on the Website is infringing your copyright, you may be held liable for damages (including costs and attorneys' fees) under Section 512(f) of the DMCA."
+                },
+                "s5": {
+                    "title": "5. Contact for DMCA",
+                    "content": "Please send all infringement notices to our designated agent at {email}."
+                }
+            }
+        }
+    },
+    "language": {
+        "vi": "Tiếng Việt",
+        "en": "English",
+        "switchLanguage": "Switch Language"
+    }
+}

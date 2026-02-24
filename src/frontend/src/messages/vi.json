@@ -1,0 +1,438 @@
+{
+    "common": {
+        "readNow": "Đọc ngay",
+        "read": "Đọc",
+        "search": "Tìm kiếm",
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "signUp": "Đăng ký",
+        "signIn": "Đăng nhập",
+        "cancel": "Hủy",
+        "submit": "Gửi",
+        "loading": "Đang tải...",
+        "views": "lượt xem",
+        "viewAll": "Xem tất cả",
+        "continue": "Tiếp tục",
+        "upgrade": "Nâng cấp",
+        "previous": "Trước",
+        "next": "Tiếp",
+        "backToHome": "Về trang chủ",
+        "or": "Hoặc",
+        "save": "Lưu",
+        "close": "Đóng",
+        "goHome": "Về trang chủ",
+        "browseManga": "Duyệt truyện",
+        "chapter": "Chương",
+        "rank": "Hạng",
+        "vip": "VIP",
+        "locked": "Khóa",
+        "featured": "Nổi bật",
+        "allRightsReserved": "Tất cả các quyền được bảo lưu.",
+        "termsOfService": "Điều khoản dịch vụ",
+        "privacyPolicy": "Chính sách bảo mật",
+        "dmca": "DMCA",
+        "startReading": "Bắt đầu đọc",
+        "recently": "Gần đây"
+    },
+    "nav": {
+        "home": "Trang chủ",
+        "latest": "Mới nhất",
+        "popular": "Phổ biến",
+        "genres": "Thể loại",
+        "popularGenres": "Thể loại phổ biến",
+        "viewAllGenres": "Xem tất cả thể loại →",
+        "quickAccess": "Truy cập nhanh",
+        "topThisWeek": "Top tuần này",
+        "newReleases": "Mới ra mắt",
+        "completedSeries": "Truyện đã hoàn thành",
+        "featured": "Nổi bật",
+        "readNow": "Đọc ngay",
+        "goPremium": "Nâng cấp VIP",
+        "profile": "Hồ sơ"
+    },
+    "home": {
+        "trendingNow": "Đang thịnh hành",
+        "latestUpdates": "Cập nhật mới nhất",
+        "updatedJustNow": "Cập nhật: Vừa xong",
+        "popularThisWeek": "Phổ biến tuần này",
+        "readPopularManga": "Đọc truyện phổ biến {title} trên SiTruyen. Hình ảnh chất lượng cao và cập nhật nhanh.",
+        "unableToLoad": "Không thể tải nội dung. Vui lòng kiểm tra kết nối backend.",
+        "timeAgo": "{time} trước"
+    },
+    "browse": {
+        "title": "Duyệt truyện",
+        "searchPlaceholder": "Tìm kiếm truyện...",
+        "sortBy": "Sắp xếp theo",
+        "genre": "Thể loại",
+        "status": "Trạng thái",
+        "allGenres": "Tất cả thể loại",
+        "allStatus": "Tất cả trạng thái",
+        "ongoing": "Đang tiến hành",
+        "completed": "Hoàn thành",
+        "latestUpdate": "Cập nhật mới nhất",
+        "mostPopular": "Phổ biến nhất",
+        "newest": "Mới nhất",
+        "noResults": "Không tìm thấy truyện nào.",
+        "results": "kết quả",
+        "showing": "Hiển thị",
+        "of": "trong",
+        "searchTitle": "Tìm kiếm",
+        "foundTitles": "Tìm thấy {count} truyện",
+        "clearSearch": "Xóa tìm kiếm",
+        "anyStatus": "Tất cả trạng thái",
+        "newArrivals": "Mới nhất",
+        "nameAZ": "Tên A-Z",
+        "all": "Tất cả",
+        "clearFilters": "Xóa lọc",
+        "pageOf": "Trang {current} / {total}",
+        "genres": "Thể loại"
+    },
+    "manga": {
+        "startReading": "Bắt đầu đọc",
+        "continueReading": "Tiếp tục đọc",
+        "description": "Mô tả",
+        "information": "Thông tin",
+        "author": "Tác giả",
+        "status": "Trạng thái",
+        "views": "Lượt xem",
+        "rating": "Đánh giá",
+        "type": "Loại",
+        "chapters": "Danh sách chương",
+        "comments": "Bình luận",
+        "manga": "MANGA",
+        "manhwa": "MANHWA",
+        "manhua": "MANHUA",
+        "ongoing": "Đang tiến hành",
+        "completed": "Hoàn thành",
+        "unknown": "Không rõ",
+        "noDescription": "Chưa có mô tả cho truyện này.",
+        "categories": "Thể loại",
+        "alternativeTitles": "Tên khác",
+        "readLatest": "Đọc chương mới nhất",
+        "toChapter": "tới Chương",
+        "total": "Tổng số"
+    },
+    "reader": {
+        "readingMode": "Chế độ đọc",
+        "verticalScroll": "Cuộn dọc",
+        "paginated": "Phân trang (BETA)",
+        "reportIssue": "Báo lỗi",
+        "failedToLoad": "Không thể tải hình ảnh",
+        "scrollToTop": "Lên đầu trang",
+        "chapterNavigation": "Điều hướng chương",
+        "allChapters": "Tất cả chương",
+        "loadingChapter": "Đang tải chương...",
+        "previous": "Trước",
+        "next": "Tiếp",
+        "noImages": "Không có hình ảnh cho chương này.",
+        "paginationModeSoon": "Chế độ phân trang sắp ra mắt."
+    },
+    "chapters": {
+        "searchPlaceholder": "Tìm số chương...",
+        "showing": "Hiển thị",
+        "showingStats": "Đang hiển thị {count} trên {total} chương",
+        "of": "trong",
+        "chapters": "chương",
+        "containsVipChapters": "Có chương VIP",
+        "getInstantAccess": "Truy cập ngay các chương mới nhất mà không cần chờ đợi.",
+        "vipBannerTitle": "Có chương VIP",
+        "vipBannerDesc": "Truy cập ngay các chương mới nhất mà không cần chờ đợi.",
+        "upgradeBtn": "Nâng cấp",
+        "lockedLabel": "Đã khóa",
+        "readLabel": "Đọc ngay",
+        "noChaptersFound": "Không tìm thấy chương nào phù hợp \"{query}\""
+    },
+    "auth": {
+        "welcomeBack": "Chào mừng trở lại",
+        "signInDescription": "Đăng nhập để tiếp tục đọc truyện yêu thích của bạn.",
+        "createAccount": "Tạo tài khoản",
+        "createAccountDescription": "Đăng ký để bắt đầu hành trình truyện tranh của bạn.",
+        "emailAddress": "Địa chỉ email",
+        "password": "Mật khẩu",
+        "username": "Tên người dùng",
+        "dontHaveAccount": "Chưa có tài khoản?",
+        "createOne": "Tạo ngay",
+        "alreadyHaveAccount": "Đã có tài khoản?",
+        "forgotPassword": "Quên mật khẩu?",
+        "forgotPasswordTitle": "Quên mật khẩu",
+        "forgotPasswordDescription": "Đừng lo. Chúng tôi sẽ giúp bạn lấy lại.",
+        "sendResetLink": "Gửi liên kết đặt lại",
+        "rememberPassword": "Nhớ mật khẩu?",
+        "processing": "Đang xử lý...",
+        "signingIn": "Đang đăng nhập...",
+        "creatingAccount": "Đang tạo tài khoản...",
+        "byConStart": "Bằng việc tiếp tục, bạn đồng ý với",
+        "byConAnd": "và",
+        "heroTagline": "Điểm đến lý tưởng cho những chuyến phiêu lưu truyện tranh bất tận. Tham gia cộng đồng và bắt đầu hành trình ngay hôm nay.",
+        "underMaintenance": "Tính năng này đang được bảo trì. Vui lòng liên hệ hỗ trợ.",
+        "loginFailed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+        "registerFailed": "Đăng ký thất bại. Vui lòng thử lại."
+    },
+    "profile": {
+        "accountInfo": "Thông tin tài khoản",
+        "joinDate": "Ngày tham gia",
+        "title": "Danh hiệu",
+        "expMultiplier": "Hệ số EXP",
+        "readingHistory": "Lịch sử đọc",
+        "cosmeticsAndRewards": "Trang sức & Phần thưởng",
+        "avatarFrames": "Khung ảnh đại diện",
+        "nameColors": "Màu tên",
+        "dailyClaimed": "Đã nhận hôm nay",
+        "claimDaily": "Nhận hàng ngày (+20 EXP)",
+        "noReadingHistory": "Chưa có lịch sử đọc.",
+        "level": "Cấp độ",
+        "novice": "Tân binh",
+        "alreadyClaimed": "Bạn đã nhận rồi!",
+        "claimed": "Đã nhận! +{exp} EXP",
+        "recentHistory": "Lịch sử gần đây",
+        "maxExp": "TỐI ĐA",
+        "expLabel": "{current} / {total} EXP"
+    },
+    "history": {
+        "title": "Lịch sử đọc",
+        "subtitle": "Tiếp tục đọc những câu chuyện yêu thích của bạn.",
+        "loginRequired": "Cần đăng nhập",
+        "loginDescription": "Vui lòng đăng nhập để theo dõi lịch sử đọc và tiếp tục đọc từ nơi bạn đã dừng lại trên tất cả các thiết bị.",
+        "logIn": "Đăng nhập",
+        "noHistoryYet": "Chưa có lịch sử",
+        "startReadingToBuild": "Bắt đầu đọc truyện để xây dựng thư viện của bạn.",
+        "loadingHistory": "Đang tải lịch sử đọc...",
+        "empty": "Bạn chưa đọc truyện nào.",
+        "lastRead": "Đọc gần đây",
+        "clearHistory": "Xóa lịch sử"
+    },
+    "vip": {
+        "title": "Nâng cấp lên Premium",
+        "subtitle": "Mở khóa tất cả nội dung VIP và tận hưởng trải nghiệm đọc truyện tốt nhất.",
+        "monthly": "Tháng",
+        "quarterly": "Quý",
+        "yearly": "Năm",
+        "lifetime": "Trọn đời",
+        "perMonth": "/tháng",
+        "perQuarter": "/quý",
+        "perYear": "/năm",
+        "oneTime": "một lần",
+        "mostPopular": "Phổ biến nhất",
+        "bestValue": "Giá trị tốt nhất",
+        "features": "Tính năng bao gồm",
+        "readAllChapters": "Đọc tất cả chương VIP",
+        "noAds": "Không quảng cáo",
+        "earlyAccess": "Truy cập sớm chương mới",
+        "vipBadge": "Huy hiệu VIP",
+        "prioritySupport": "Hỗ trợ ưu tiên",
+        "selectPlan": "Chọn gói",
+        "scanQrToPay": "Quét mã QR để thanh toán",
+        "waitingForPayment": "Đang chờ thanh toán...",
+        "paymentSuccess": "Thanh toán thành công!",
+        "paymentFailed": "Thanh toán thất bại",
+        "tryAgain": "Thử lại",
+        "alreadyVip": "Bạn đã là thành viên VIP!",
+        "vipExpires": "VIP hết hạn vào",
+        "enjoyPremium": "Tận hưởng trải nghiệm Premium của bạn.",
+        "upgradeNow": "Nâng cấp ngay",
+        "paymentInstructions": "Hướng dẫn thanh toán",
+        "amount": "Số tiền",
+        "orderCode": "Mã đơn hàng",
+        "checkingPayment": "Đang kiểm tra thanh toán..."
+    },
+    "report": {
+        "title": "Báo lỗi / Phản hồi",
+        "issueType": "Loại vấn đề",
+        "imageBroken": "Hình ảnh bị hỏng / Không tải",
+        "wrongContent": "Nội dung sai / Chương sai",
+        "translationIssue": "Lỗi dịch / Lỗi chính tả",
+        "websiteBug": "Lỗi giao diện / Tính năng",
+        "vipIssue": "Vấn đề tài khoản VIP",
+        "otherFeedback": "Phản hồi khác",
+        "description": "Mô tả",
+        "descriptionRequired": "Mô tả *",
+        "descriptionPlaceholder": "Vui lòng mô tả vấn đề bạn gặp phải...",
+        "contactEmail": "Email liên hệ (Tùy chọn)",
+        "contactEmailPlaceholder": "Để admin liên hệ với bạn (nếu cần)",
+        "cancelBtn": "Hủy",
+        "submitReport": "Gửi báo cáo",
+        "sending": "Đang gửi...",
+        "reportSubmitted": "Đã gửi báo cáo!",
+        "thankYou": "Cảm ơn phản hồi của bạn. Chúng tôi sẽ kiểm tra sớm.",
+        "submitFailed": "Gửi báo cáo thất bại. Vui lòng thử lại."
+    },
+    "footer": {
+        "tagline": "Điểm đến lý tưởng cho người yêu truyện tranh. Đọc truyện chất lượng cao miễn phí, cập nhật hàng ngày.",
+        "discover": "Khám phá",
+        "latestUpdates": "Cập nhật mới nhất",
+        "mostPopular": "Phổ biến nhất",
+        "newArrivals": "Mới ra mắt",
+        "completedSeries": "Truyện hoàn thành",
+        "account": "Tài khoản",
+        "signInRegister": "Đăng nhập / Đăng ký",
+        "myLibrary": "Thư viện của tôi",
+        "readingHistory": "Lịch sử đọc",
+        "settings": "Cài đặt",
+        "stayUpdated": "Cập nhật tin tức",
+        "enterEmail": "Nhập email của bạn",
+        "subscribe": "Đăng ký",
+        "copyright": "© 2026 SiTruyen. Tất cả các quyền được bảo lưu."
+    },
+    "search": {
+        "placeholder": "Tìm kiếm truyện, tác giả...",
+        "searching": "Đang tìm kiếm...",
+        "noResults": "Không có kết quả",
+        "trendingSearches": "Tìm kiếm thịnh hành",
+        "startTyping": "Bắt đầu gõ để tìm kiếm...",
+        "searchManga": "Tìm kiếm truyện"
+    },
+    "comment": {
+        "comments": "Bình luận",
+        "loginToComment": "Đăng nhập để bình luận",
+        "writeComment": "Viết bình luận...",
+        "post": "Đăng",
+        "beFirst": "Hãy là người đầu tiên bình luận!",
+        "noComments": "Chưa có bình luận nào.",
+        "posting": "Đang đăng...",
+        "stickers": "Nhãn dán",
+        "reply": "Trả lời",
+        "delete": "Xóa",
+        "failedToLoad": "Không thể tải bình luận.",
+        "replyingTo": "Trả lời cho",
+        "joinDiscussion": "Tham gia thảo luận...",
+        "chars": "ký tự",
+        "logInRegister": "Đăng nhập / Đăng ký",
+        "loginToDiscuss": "Vui lòng đăng nhập để tham gia thảo luận.",
+        "loadingComments": "Đang tải bình luận..."
+    },
+    "errors": {
+        "pageNotFound": "Không tìm thấy trang",
+        "pageNotFoundDescription": "Ôi! Có vẻ bạn đã lạc vào vùng đất chưa được khám phá. Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
+        "somethingWentWrong": "Đã xảy ra lỗi",
+        "tryAgain": "Thử lại",
+        "goBack": "Quay lại"
+    },
+    "legal": {
+        "terms": {
+            "title": "Điều khoản dịch vụ",
+            "subtitle": "Vui lòng đọc kỹ các điều khoản này trước khi sử dụng dịch vụ của chúng tôi.",
+            "sections": {
+                "s1": {
+                    "title": "1. Chấp nhận điều khoản",
+                    "content": "Bằng việc truy cập và sử dụng <strong>SiTruyen</strong> (\"Dịch vụ\"), bạn chấp nhận và đồng ý tuân thủ các điều khoản và điều kiện của thỏa thuận này. Ngoài ra, khi sử dụng các dịch vụ cụ thể này, bạn sẽ tuân theo bất kỳ hướng dẫn hoặc quy tắc đã đăng nào áp dụng cho các dịch vụ đó."
+                },
+                "s2": {
+                    "title": "2. Mô tả dịch vụ",
+                    "content": "SiTruyen cung cấp cho người dùng quyền truy cập vào bộ sưu tập phong phú các tài nguyên truyện tranh. Bạn hiểu và đồng ý rằng Dịch vụ được cung cấp \"NGUYÊN TRẠNG\" và SiTruyen không chịu trách nhiệm về tính kịp thời, việc xóa, giao sai hoặc không lưu trữ bất kỳ thông tin liên lạc hoặc cài đặt cá nhân hóa nào của người dùng."
+                },
+                "s3": {
+                    "title": "3. Quy tắc người dùng",
+                    "content": "Bạn đồng ý không sử dụng Dịch vụ để:",
+                    "list": [
+                        "Tải lên, đăng, email, truyền hoặc cung cấp bất kỳ nội dung nào bất hợp pháp, có hại, đe dọa, lạm dụng, quấy rối hoặc đáng phản đối.",
+                        "Mạo danh bất kỳ cá nhân hoặc tổ chức nào, hoặc tuyên bố sai hoặc xuyên tạc mối liên hệ của bạn với một người dùng hoặc tổ chức.",
+                        "Vi phạm bất kỳ luật địa phương, tiểu bang, quốc gia hoặc quốc tế hiện hành nào.",
+                        "Tham gia bất kỳ hoạt động nào can thiệp hoặc làm gián đoạn Dịch vụ."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Sở hữu trí tuệ",
+                    "content": "SiTruyen tôn trọng sở hữu trí tuệ của người khác và chúng tôi yêu cầu người dùng cũng làm như vậy. Nội dung có trên trang web chỉ dành cho mục đích sử dụng cá nhân, phi thương mại. Tất cả các quyền, tiêu đề và lợi ích không được cấp rõ ràng đều được bảo lưu."
+                },
+                "s5": {
+                    "title": "5. Chấm dứt",
+                    "content": "Chúng tôi có thể chấm dứt hoặc đình chỉ quyền truy cập vào Dịch vụ của chúng tôi ngay lập tức, không cần thông báo trước hoặc chịu trách nhiệm, vì bất kỳ lý do gì, bao gồm nhưng không giới hạn nếu bạn vi phạm Điều khoản."
+                },
+                "s6": {
+                    "title": "6. Thay đổi điều khoản",
+                    "content": "Chúng tôi bảo lưu quyền, theo quyết định riêng của mình, sửa đổi hoặc thay thế các Điều khoản này bất cứ lúc nào. Bằng việc tiếp tục truy cập hoặc sử dụng Dịch vụ của chúng tôi sau khi các bản sửa đổi đó có hiệu lực, bạn đồng ý tuân theo các điều khoản đã sửa đổi."
+                },
+                "s7": {
+                    "title": "7. Liên hệ với chúng tôi",
+                    "content": "Nếu bạn có bất kỳ câu hỏi nào về các Điều khoản này, vui lòng liên hệ với chúng tôi tại {email}."
+                }
+            }
+        },
+        "privacy": {
+            "title": "Chính sách bảo mật",
+            "subtitle": "Chúng tôi coi trọng quyền riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn.",
+            "sections": {
+                "s1": {
+                    "title": "1. Giới thiệu",
+                    "content": "Chào mừng đến với <strong>SiTruyen</strong> (\"chúng tôi\"). Chúng tôi cam kết bảo vệ thông tin cá nhân và quyền riêng tư của bạn. Chính sách bảo mật này áp dụng cho trang web của chúng tôi và tất cả các dịch vụ liên quan (gọi chung là \"Dịch vụ\"). Bằng việc truy cập hoặc sử dụng Dịch vụ, bạn đồng ý với các điều khoản của Chính sách bảo mật này."
+                },
+                "s2": {
+                    "title": "2. Thông tin chúng tôi thu thập",
+                    "content": "Chúng tôi thu thập thông tin mà bạn cung cấp một cách an toàn cho chúng tôi. Điều này có thể bao gồm:",
+                    "list": [
+                        "<strong>Thông tin cá nhân:</strong> Tên, địa chỉ email, mật khẩu và các chi tiết đăng ký khác.",
+                        "<strong>Dữ liệu sử dụng:</strong> Thông tin về cách bạn tương tác với Dịch vụ, chẳng hạn như lịch sử đọc, dấu trang và tùy chọn.",
+                        "<strong>Thông tin thiết bị:</strong> Địa chỉ IP, loại trình duyệt và hệ điều hành cho mục đích bảo mật và phân tích."
+                    ]
+                },
+                "s3": {
+                    "title": "3. Cách chúng tôi sử dụng thông tin",
+                    "content": "Chúng tôi sử dụng thông tin thu thập được để:",
+                    "list": [
+                        "Cung cấp, vận hành và duy trì Dịch vụ.",
+                        "Đồng bộ tiến trình đọc và dấu trang của bạn trên các thiết bị.",
+                        "Gửi cho bạn các cập nhật, cảnh báo bảo mật và tin nhắn hỗ trợ.",
+                        "Theo dõi mô hình sử dụng để cải thiện trải nghiệm người dùng và hiệu suất."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Chia sẻ dữ liệu và bảo mật",
+                    "content": "Chúng tôi không bán dữ liệu cá nhân của bạn cho bên thứ ba. Chúng tôi không sở hữu dữ liệu của bạn nhưng xử lý nó để cung cấp Dịch vụ. Chúng tôi thực hiện các biện pháp bảo mật kỹ thuật phù hợp để bảo vệ thông tin cá nhân của bạn chống lại truy cập trái phép, thay đổi hoặc phá hủy. Tuy nhiên, không có phương thức truyền qua Internet nào là an toàn 100%."
+                },
+                "s5": {
+                    "title": "5. Cookie và theo dõi",
+                    "content": "Chúng tôi sử dụng cookie và các công nghệ theo dõi tương tự để theo dõi hoạt động trên Dịch vụ của chúng tôi và lưu giữ một số thông tin nhất định. Bạn có thể hướng dẫn trình duyệt của mình từ chối tất cả cookie hoặc thông báo khi cookie đang được gửi."
+                },
+                "s6": {
+                    "title": "6. Liên hệ với chúng tôi",
+                    "content": "Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật này, vui lòng liên hệ với chúng tôi tại {email}."
+                }
+            }
+        },
+        "dmca": {
+            "title": "Bản quyền DMCA",
+            "subtitle": "Hướng dẫn thông báo theo Đạo luật Bản quyền Thiên niên kỷ Kỹ thuật số.",
+            "sections": {
+                "s1": {
+                    "title": "1. Thông báo DMCA",
+                    "content1": "<strong>SiTruyen</strong> tôn trọng quyền sở hữu trí tuệ của người khác. Chúng tôi tuân thủ Đạo luật Bản quyền Thiên niên kỷ Kỹ thuật số (DMCA) và các luật bản quyền hiện hành khác. Chính sách của chúng tôi là phản hồi mọi thông báo vi phạm và thực hiện các hành động thích hợp theo Đạo luật Bản quyền Thiên niên kỷ Kỹ thuật số và các luật sở hữu trí tuệ hiện hành khác.",
+                    "content2": "Nếu tài liệu có bản quyền của bạn đã được đăng trên SiTruyen hoặc nếu các liên kết đến tài liệu có bản quyền của bạn được trả về thông qua công cụ tìm kiếm của chúng tôi và bạn muốn xóa tài liệu này, bạn phải cung cấp một thông báo bằng văn bản chi tiết các thông tin được liệt kê trong phần sau."
+                },
+                "s2": {
+                    "title": "2. Thủ tục gỡ bỏ",
+                    "content": "Để nộp thông báo vi phạm bản quyền DMCA, vui lòng gửi cho chúng tôi thông báo bằng văn bản chứa các thông tin sau:",
+                    "list": [
+                        "Chữ ký vật lý hoặc điện tử của người được ủy quyền hành động thay mặt cho chủ sở hữu quyền độc quyền bị cho là vi phạm.",
+                        "Xác định tác phẩm có bản quyền bị cho là bị vi phạm.",
+                        "Xác định tài liệu bị cho là vi phạm hoặc là đối tượng của hoạt động vi phạm và cần được gỡ bỏ.",
+                        "Thông tin đủ hợp lý để cho phép chúng tôi liên hệ với bên khiếu nại, chẳng hạn như địa chỉ, số điện thoại và, nếu có, địa chỉ email.",
+                        "Tuyên bố rằng bên khiếu nại tin tưởng thiện chí rằng việc sử dụng tài liệu theo cách bị khiếu nại không được chủ sở hữu bản quyền, đại lý của họ hoặc luật pháp cho phép."
+                    ]
+                },
+                "s3": {
+                    "title": "3. Thông báo phản đối",
+                    "content": "Nếu bạn tin rằng nội dung của bạn đã bị xóa (hoặc bị vô hiệu hóa truy cập) không vi phạm, hoặc bạn có sự ủy quyền từ chủ sở hữu bản quyền, đại lý của chủ sở hữu bản quyền, hoặc theo luật pháp, để đăng và sử dụng tài liệu trong nội dung của bạn, bạn có thể gửi thông báo phản đối chứa các thông tin sau cho Đại lý Bản quyền của chúng tôi:",
+                    "list": [
+                        "Chữ ký vật lý hoặc điện tử của bạn.",
+                        "Xác định nội dung đã bị xóa hoặc bị vô hiệu hóa truy cập.",
+                        "Tuyên bố của bạn rằng bạn tin tưởng thiện chí rằng nội dung đã bị xóa do nhầm lẫn hoặc nhận dạng sai nội dung.",
+                        "Tên, địa chỉ, số điện thoại và địa chỉ email của bạn."
+                    ]
+                },
+                "s4": {
+                    "title": "4. Tuyên bố miễn trừ",
+                    "content": "Xin lưu ý rằng nếu bạn cố ý xuyên tạc rằng tài liệu hoặc hoạt động trên Trang web vi phạm bản quyền của bạn, bạn có thể phải chịu trách nhiệm về các thiệt hại (bao gồm chi phí và phí luật sư) theo Mục 512(f) của DMCA."
+                },
+                "s5": {
+                    "title": "5. Liên hệ về DMCA",
+                    "content": "Vui lòng gửi tất cả thông báo vi phạm đến đại lý được chỉ định của chúng tôi tại {email}."
+                }
+            }
+        }
+    },
+    "language": {
+        "vi": "Tiếng Việt",
+        "en": "English",
+        "switchLanguage": "Đổi ngôn ngữ"
+    }
+}

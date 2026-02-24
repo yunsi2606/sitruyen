@@ -7,36 +7,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { auth } from "@/lib/auth";
 import { vipOrderService } from "@/services/api";
 import { trackEvent, EVENTS } from "@/lib/gtag";
-
-// Plan Config
-const PLANS = [
-    {
-        id: "1month",
-        label: "1 Month",
-        price: 49000,
-        priceLabel: "49,000đ",
-        perDay: "~1,600đ/day",
-        popular: false,
-    },
-    {
-        id: "3months",
-        label: "3 Months",
-        price: 129000,
-        priceLabel: "129,000đ",
-        perDay: "~1,430đ/day",
-        popular: true,
-        badge: "Most Popular",
-    },
-    {
-        id: "6months",
-        label: "6 Months",
-        price: 229000,
-        priceLabel: "229,000đ",
-        perDay: "~1,270đ/day",
-        popular: false,
-        badge: "Best Value",
-    },
-];
+import { useTranslations } from "next-intl";
 
 // Page States
 type PageState = "select" | "payment" | "success" | "error";
@@ -58,6 +29,39 @@ interface BankData {
 }
 
 export default function VipUpgradePage() {
+    const t = useTranslations("vip");
+    const tc = useTranslations("common");
+
+    // Plan Config moved inside component to use translations
+    const PLANS = [
+        {
+            id: "1month",
+            label: t("plans.1month"),
+            price: 49000,
+            priceLabel: "49,000đ",
+            perDay: "~1,600đ/" + tc("day"),
+            popular: false,
+        },
+        {
+            id: "3months",
+            label: t("plans.3months"),
+            price: 129000,
+            priceLabel: "129,000đ",
+            perDay: "~1,430đ/" + tc("day"),
+            popular: true,
+            badge: t("mostPopular"),
+        },
+        {
+            id: "6months",
+            label: t("plans.6months"),
+            price: 229000,
+            priceLabel: "229,000đ",
+            perDay: "~1,270đ/" + tc("day"),
+            popular: false,
+            badge: t("bestValue"),
+        },
+    ];
+
     const [pageState, setPageState] = useState<PageState>("select");
     const [selectedPlan, setSelectedPlan] = useState<string>("3months");
     const [orderData, setOrderData] = useState<OrderData | null>(null);
@@ -93,7 +97,7 @@ export default function VipUpgradePage() {
     // Create Order
     const handlePurchase = async () => {
         if (!token || !user) {
-            setError("Vui lòng đăng nhập trước khi mua VIP.");
+            setError(t("loginToPurchase"));
             return;
         }
 
@@ -134,7 +138,7 @@ export default function VipUpgradePage() {
                     } else if (status.status === "expired" || status.status === "cancelled") {
                         clearInterval(pollRef.current!);
                         clearInterval(countdownRef.current!);
-                        setError("Đơn hàng đã hết hạn. Vui lòng thử lại.");
+                        setError(t("expiredError"));
                         setPageState("select");
                     }
                 } catch (e) {
@@ -148,7 +152,7 @@ export default function VipUpgradePage() {
                     if (prev <= 1) {
                         clearInterval(countdownRef.current!);
                         clearInterval(pollRef.current!);
-                        setError("Đơn hàng đã hết hạn. Vui lòng thử lại.");
+                        setError(t("expiredError"));
                         setPageState("select");
                         return 0;
                     }
@@ -157,7 +161,7 @@ export default function VipUpgradePage() {
             }, 1000);
 
         } catch (err: any) {
-            setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.");
+            setError(err.message || t("generalError"));
         } finally {
             setLoading(false);
         }
@@ -178,9 +182,9 @@ export default function VipUpgradePage() {
                     <div className="mx-auto w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center ring-2 ring-green-500/20">
                         <CheckCircle2 className="w-10 h-10 text-green-500" />
                     </div>
-                    <h1 className="text-3xl font-extrabold text-white">Upgrade Successful!</h1>
+                    <h1 className="text-3xl font-extrabold text-white">{t("successTitle")}</h1>
                     <p className="text-muted text-lg">
-                        You are now a VIP member. Enjoy unlimited reading experience!
+                        {t("successDescription")}
                     </p>
                     <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-xl">
                         <p className="text-green-500 font-semibold text-sm">
@@ -192,9 +196,9 @@ export default function VipUpgradePage() {
                         className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-bold rounded-xl shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-1 transition-all"
                     >
                         <Crown className="w-5 h-5 fill-current" />
-                        Start Reading
+                        {tc("readNow")}
                     </Link>
-                    <p className="text-xs text-muted animate-pulse">Redirecting in 3 seconds...</p>
+                    <p className="text-xs text-muted animate-pulse">{t("redirecting", { seconds: 3 })}</p>
                 </div>
             </div>
         );
@@ -210,11 +214,11 @@ export default function VipUpgradePage() {
                     <div className="text-center space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-xs font-bold uppercase tracking-wider">
                             <QrCode className="w-3.5 h-3.5" />
-                            Bank Transfer
+                            {t("bankTransfer")}
                         </div>
-                        <h1 className="text-2xl font-extrabold text-white">Scan QR to Pay</h1>
+                        <h1 className="text-2xl font-extrabold text-white">{t("scanQr")}</h1>
                         <p className="text-sm text-muted">
-                            After transfer, system will auto-confirm within <strong className="text-white">10 seconds</strong>.
+                            {t("paymentInstructions", { seconds: 10 })}
                         </p>
                     </div>
 
@@ -229,7 +233,7 @@ export default function VipUpgradePage() {
                             unoptimized
                         />
                         <p className="mt-3 text-xs text-gray-500 text-center">
-                            Open Bank App → Scan QR → Confirm
+                            {t("scanInstruction")}
                         </p>
                     </div>
 
@@ -237,20 +241,20 @@ export default function VipUpgradePage() {
                     <div className="bg-surface border border-white/5 rounded-2xl p-5 space-y-4">
                         <h3 className="text-sm font-bold text-white flex items-center gap-2">
                             <Shield className="w-4 h-4 text-yellow-500" />
-                            Transfer Details
+                            {t("transferDetails")}
                         </h3>
 
                         <div className="space-y-3">
-                            <InfoRow label="Bank" value={bankData.bank_id} />
-                            <InfoRow label="Account No." value={bankData.account_number} onCopy={() => copyText(bankData.account_number)} />
-                            <InfoRow label="Account Name" value={bankData.account_name} />
-                            <InfoRow label="Amount" value={formatVND(bankData.amount)} highlight />
-                            <InfoRow label="Content (Memo)" value={bankData.content} onCopy={() => copyText(bankData.content)} highlight />
+                            <InfoRow label={t("bank")} value={bankData.bank_id} />
+                            <InfoRow label={t("accountNumber")} value={bankData.account_number} onCopy={() => copyText(bankData.account_number)} />
+                            <InfoRow label={t("accountName")} value={bankData.account_name} />
+                            <InfoRow label={t("amount")} value={formatVND(bankData.amount)} highlight />
+                            <InfoRow label={t("memo")} value={bankData.content} onCopy={() => copyText(bankData.content)} highlight />
                         </div>
 
                         <div className="mt-2 p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
                             <p className="text-[11px] text-red-400 font-medium">
-                                ⚠️ Please ensure <strong>exact transfer content (memo)</strong> for auto-confirmation. Do not change amount or content.
+                                ⚠️ {t("exactMemoWarning")}
                             </p>
                         </div>
                     </div>
@@ -264,8 +268,8 @@ export default function VipUpgradePage() {
                                     <div className="absolute inset-0 w-5 h-5 rounded-full bg-yellow-500/20 animate-ping" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-white">Waiting for payment...</p>
-                                    <p className="text-[11px] text-muted">Auto-confirm when funds received</p>
+                                    <p className="text-sm font-semibold text-white">{t("waitingPayment")}</p>
+                                    <p className="text-[11px] text-muted">{t("autoConfirm")}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5 text-muted">
@@ -286,14 +290,14 @@ export default function VipUpgradePage() {
                         }}
                         className="w-full text-center text-sm text-muted hover:text-white transition-colors py-2"
                     >
-                        ← Back to Plans
+                        ← {t("backToPlans")}
                     </button>
                 </div>
 
                 {/* Copied toast */}
                 {copied && (
                     <div className="fixed bottom-8 right-8 bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg animate-in slide-in-from-bottom-2 z-50">
-                        ✓ Copied
+                        ✓ {t("copied")}
                     </div>
                 )}
             </div>
@@ -307,23 +311,23 @@ export default function VipUpgradePage() {
             <div className="text-center space-y-4 mb-12 animate-in fade-in-down duration-700">
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-bold text-sm uppercase tracking-wider">
                     <Crown className="w-4 h-4" />
-                    Premium Access
+                    {t("premiumAccess")}
                 </span>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-                    Upgrade to VIP
+                    {t("title")}
                 </h1>
                 <p className="text-lg text-muted max-w-xl mx-auto">
-                    Read the latest chapters instantly, no waiting. Support translation teams and website development.
+                    {t("description")}
                 </p>
             </div>
 
             {/* Benefits */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl w-full mb-12">
                 {[
-                    { icon: "⚡", label: "Instant Access" },
-                    { icon: "🔓", label: "Unlock All VIP" },
-                    { icon: "💎", label: "Exclusive Badge" },
-                    { icon: "❤️", label: "Support Us" },
+                    { icon: "⚡", label: t("instantAccess") },
+                    { icon: "🔓", label: t("unlockAll") },
+                    { icon: "💎", label: t("exclusiveBadge") },
+                    { icon: "❤️", label: t("supportUs") },
                 ].map((b, i) => (
                     <div key={i} className="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface border border-white/5 text-center">
                         <span className="text-2xl">{b.icon}</span>
@@ -383,7 +387,7 @@ export default function VipUpgradePage() {
                         href="/login"
                         className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-500 text-white shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-1 transition-all text-lg"
                     >
-                        Login to Purchase VIP
+                        {t("loginToPurchase")}
                         <ArrowRight className="w-5 h-5" />
                     </Link>
                 ) : (
@@ -395,39 +399,39 @@ export default function VipUpgradePage() {
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Creating Order...
+                                {t("creatingOrder")}
                             </>
                         ) : (
                             <>
                                 <Crown className="w-5 h-5 fill-current" />
-                                Get VIP – {PLANS.find(p => p.id === selectedPlan)?.priceLabel}
+                                {t("getVip", { price: PLANS.find(p => p.id === selectedPlan)?.priceLabel || "" })}
                             </>
                         )}
                     </button>
                 )}
                 <p className="text-xs text-center text-muted">
-                    Secure Bank Transfer • Auto-confirmation in 10s
+                    {t("secureBankTransfer")}
                 </p>
             </div>
 
             {/* FAQ */}
             <div className="max-w-3xl w-full mt-16 space-y-4">
-                <h2 className="text-xl font-bold text-white text-center mb-6">Frequently Asked Questions</h2>
+                <h2 className="text-xl font-bold text-white text-center mb-6">{t("faq")}</h2>
                 <FaqItem
-                    q="How do I pay?"
-                    a="After selecting a plan, a QR code will be generated. Open your banking app, scan the QR code to transfer. The system will auto-confirm within 10 seconds."
+                    q={t("faqItems.q1")}
+                    a={t("faqItems.a1")}
                 />
                 <FaqItem
-                    q="I paid but VIP is not active?"
-                    a="Please ensure you entered the exact transfer content (memo). If it's not active after 5 minutes, please contact admin via fanpage."
+                    q={t("faqItems.q2")}
+                    a={t("faqItems.a2")}
                 />
                 <FaqItem
-                    q="What are VIP benefits?"
-                    a="VIP members can read the latest chapters immediately upon release, no 7-day wait. Plus an exclusive VIP badge on your profile."
+                    q={t("faqItems.q3")}
+                    a={t("faqItems.a3")}
                 />
                 <FaqItem
-                    q="Can I extend my VIP plan?"
-                    a="Yes! If you buy another plan while your current one is active, the duration will be stacked automatically."
+                    q={t("faqItems.q4")}
+                    a={t("faqItems.a4")}
                 />
             </div>
         </div>

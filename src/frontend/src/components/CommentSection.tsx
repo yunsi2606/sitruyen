@@ -10,6 +10,7 @@ import { StickerPicker } from "./StickerPicker";
 import { StickerDisplay } from "./StickerDisplay";
 import { AvatarFrame } from "./AvatarFrame";
 import { trackEvent, EVENTS } from "@/lib/gtag";
+import { useTranslations } from "next-intl";
 
 interface CommentSectionProps {
     storyId: number;
@@ -38,6 +39,8 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
     const [storyDocumentId, setStoryDocumentId] = useState<string | null>(null);
     const [chapterDocumentId, setChapterDocumentId] = useState<string | null>(null);
     const isChapterView = !!chapterId;
+    const t = useTranslations("comment");
+    const tc = useTranslations("common");
 
     useEffect(() => {
         const fetchContextIds = async () => {
@@ -90,7 +93,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
             const data = await commentService.getComments(storyId, chapterId, 100, token);
             setComments(data);
         } catch (err) {
-            setError("Failed to load comments.");
+            setError(t("failedToLoad"));
         } finally {
             setLoading(false);
         }
@@ -196,7 +199,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                     <div className="flex-1 space-y-3 relative">
                         {replyTo && (
                             <div className="text-xs text-muted flex items-center gap-2 bg-white/5 p-2 rounded-lg w-fit">
-                                Replying to #{replyTo}
+                                {t("replyingTo")} #{replyTo}
                                 <button type="button" onClick={() => setReplyTo(null)} className="hover:text-red-400"><X className="w-3 h-3" /></button>
                             </div>
                         )}
@@ -205,7 +208,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                             <textarea
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Join the discussion..."
+                                placeholder={t("joinDiscussion")}
                                 className="w-full bg-transparent p-4 text-sm text-white focus:outline-none min-h-[80px] resize-y placeholder:text-muted/50"
                             />
 
@@ -233,7 +236,7 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                                         </div>
                                     )}
                                 </div>
-                                <div className="text-xs text-muted">{newComment.length} chars</div>
+                                <div className="text-xs text-muted">{newComment.length} {t("chars")}</div>
                             </div>
                         </div>
 
@@ -260,21 +263,21 @@ export function CommentSection({ storyId, chapterId }: CommentSectionProps) {
                                 className="px-6 py-2 bg-accent text-white font-bold rounded-xl text-sm hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-lg shadow-accent/20"
                             >
                                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                                Post
+                                {t("post")}
                             </button>
                         </div>
                     </div>
                 </form>
             ) : (
                 <div className="bg-white/5 rounded-xl p-6 text-center border border-white/10 border-dashed">
-                    <p className="text-muted mb-4">Please log in to join the discussion.</p>
-                    <Link href="/login" className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-bold transition-colors">Log In / Register</Link>
+                    <p className="text-muted mb-4">{t("loginToDiscuss")}</p>
+                    <Link href="/login" className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-bold transition-colors">{t("logInRegister")}</Link>
                 </div>
             )}
 
             <div className="space-y-6 mt-8">
-                {loading ? <div className="text-center py-12 text-muted animate-pulse">Loading comments...</div> :
-                    rootComments.length === 0 ? <div className="text-center py-12 text-muted">No comments yet.</div> :
+                {loading ? <div className="text-center py-12 text-muted animate-pulse">{t("loadingComments")}</div> :
+                    rootComments.length === 0 ? <div className="text-center py-12 text-muted">{t("noComments")}</div> :
                         rootComments.map(comment => (
                             <CommentItem
                                 key={comment.id}
