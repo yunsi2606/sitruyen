@@ -24,7 +24,7 @@ export function ReaderControls({ currentChapter, chapters, mangaSlug, onModeChan
     const t = useTranslations("reader");
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-t border-border p-4 flex items-center justify-between shadow-[0_-5px_10px_rgba(0,0,0,0.1)] transition-transform duration-300">
+        <div className="bg-background/90 backdrop-blur-md border-t border-border p-4 flex items-center justify-between shadow-[0_-5px_10px_rgba(0,0,0,0.1)]">
             <div className="flex items-center space-x-4">
                 <Link
                     href={prevChapter ? `/read/${mangaSlug}/${prevChapter.slug}` : "#"}

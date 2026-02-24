@@ -41,7 +41,7 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header />
           {/* Main Layout Container - Fluid to allow full-width heroes/bands */}
-          <main className="flex-1 w-full fade-in-up">
+          <main className="flex-1 w-full">
             {children}
           </main>
           {/* Footer removed here, managed by page or added back later as global component */}

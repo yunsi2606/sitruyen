@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { categoryService } from "@/services/api";
 import Link from 'next/link';
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Bell, User, Menu, ChevronDown, List, Zap, LogOut, Crown } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -12,11 +13,15 @@ import { useTranslations } from "next-intl";
 
 
 export function Header() {
+    const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [genres, setGenres] = useState<any[]>([]);
     const t = useTranslations("nav");
     const tc = useTranslations("common");
+
+    // Hide the global navbar on the reader page (it has its own header)
+    const isReaderPage = pathname.startsWith('/read');
 
     useEffect(() => {
         // Fetch User and Genres
@@ -41,6 +46,8 @@ export function Header() {
         window.addEventListener("auth:change", handleAuthChange);
         return () => window.removeEventListener("auth:change", handleAuthChange);
     }, []);
+
+    if (isReaderPage) return null;
 
     return (
         <header className="sticky top-0 z-50 h-[72px] bg-[rgba(31,31,31,0.95)] backdrop-blur-sm shadow-sm border-b border-white/5 box-border">
