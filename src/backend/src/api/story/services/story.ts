@@ -40,7 +40,7 @@ export default factories.createCoreService('api::story.story', ({ strapi }) => (
             // Popular
             strapi.entityService.findMany('api::story.story', {
                 limit: 6,
-                populate: ['cover'],
+                populate: ['cover', 'chapters'],
                 sort: { view_count: 'desc' },
             }),
             // Genres

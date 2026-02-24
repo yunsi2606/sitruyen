@@ -8,6 +8,7 @@ export interface Manga {
     rating: number;
     status: "Ongoing" | "Completed";
     view_count?: number;
+    total_chapters?: number;
     chapters: Chapter[];
 }
 

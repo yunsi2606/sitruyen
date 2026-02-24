@@ -1,10 +1,31 @@
 
 import { fetchAPI } from "@/lib/api";
 
+interface StrapiError {
+    status: number;
+    name: string;
+    message: string;
+    details?: Record<string, unknown>;
+}
+
 type StrapiResponse<T> = {
     data: T | null;
-    error?: any;
+    error?: StrapiError;
 };
+
+interface FetchOptions {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface StrapiItem {
+    id: number;
+    documentId?: string;
+    attributes?: Record<string, any>;
+    [key: string]: any;
+}
 
 // Comment Types
 export interface Comment {
@@ -90,20 +111,26 @@ export const storyService = {
     },
 
     // Get stories for homepage (featured/latest)
-    async getHomepageStories(): Promise<any> {
+    async getHomepageStories(): Promise<StrapiItem> {
         const res = await fetchAPI("/stories/homepage");
         return res;
     },
 
     // Get full story details by slug
-    async getBySlug(slug: string): Promise<any> {
-        const query = `?filters[slug][$eq]=${slug}&populate=*`;
+    async getBySlug(slug: string): Promise<StrapiItem | null> {
+        const query = `?filters[slug][$eq]=${slug}`
+            + `&populate[cover][fields][0]=url`
+            + `&populate[categories][fields][0]=name&populate[categories][fields][1]=slug`
+            + `&populate[chapters][fields][0]=title&populate[chapters][fields][1]=slug`
+            + `&populate[chapters][fields][2]=chapter_number&populate[chapters][fields][3]=createdAt`
+            + `&populate[chapters][fields][4]=view_count&populate[chapters][fields][5]=is_vip_only`
+            + `&populate[chapters][sort][0]=chapter_number:desc`;
         const res = await fetchAPI(`/stories${query}`);
         return res.data?.[0] || null;
     },
 
     // Search/Filter stories
-    async search(queryParams: string): Promise<any> {
+    async search(queryParams: string): Promise<StrapiItem> {
         const res = await fetchAPI(queryParams);
         return res;
     }
@@ -125,8 +152,10 @@ export const chapterService = {
     },
 
     // Get chapter by slug
-    async getBySlug(slug: string): Promise<any> {
-        const query = `?filters[slug][$eq]=${slug}&populate=*`; // Adjust populate as needed
+    async getBySlug(slug: string): Promise<StrapiItem | null> {
+        const query = `?filters[slug][$eq]=${slug}`
+            + `&populate[images][fields][0]=url`
+            + `&populate[story][fields][0]=title&populate[story][fields][1]=slug`;
         const res = await fetchAPI(`/chapters${query}`);
         return res.data?.[0] || null;
     },
@@ -134,7 +163,7 @@ export const chapterService = {
     // Mark chapter as read
     async markAsRead(chapterId: number, token?: string | null): Promise<void> {
         try {
-            const options: any = { method: 'POST' };
+            const options: FetchOptions = { method: 'POST' };
             if (token) {
                 options.headers = { Authorization: `Bearer ${token}` };
             }
@@ -145,10 +174,16 @@ export const chapterService = {
     },
 
     // Get chapter with details (images, story, siblings)
-    async getChapterWithDetails(storySlug: string, chapterSlug: string, token?: string | null): Promise<any> {
-        const query = `?filters[slug][$eq]=${chapterSlug}&filters[story][slug][$eq]=${storySlug}&populate[images][fields][0]=url&populate[story][fields][0]=title&populate[story][fields][1]=slug&populate[story][populate][chapters][fields][0]=title&populate[story][populate][chapters][fields][1]=slug&populate[story][populate][chapters][fields][2]=chapter_number&populate[story][populate][chapters][sort][0]=chapter_number:desc`;
+    async getChapterWithDetails(storySlug: string, chapterSlug: string, token?: string | null): Promise<StrapiItem | null> {
+        const query = `?filters[slug][$eq]=${chapterSlug}&filters[story][slug][$eq]=${storySlug}`
+            + `&populate[images][fields][0]=url`
+            + `&populate[story][fields][0]=title&populate[story][fields][1]=slug`
+            + `&populate[story][populate][chapters][fields][0]=title`
+            + `&populate[story][populate][chapters][fields][1]=slug`
+            + `&populate[story][populate][chapters][fields][2]=chapter_number`
+            + `&populate[story][populate][chapters][sort][0]=chapter_number:desc`;
 
-        const options: any = {};
+        const options: FetchOptions = {};
         if (token) {
             options.headers = { Authorization: `Bearer ${token}` };
         }

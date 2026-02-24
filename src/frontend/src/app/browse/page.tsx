@@ -10,7 +10,8 @@ import { Star, Clock, Filter, ChevronDown, List, Grid, Search, SlidersHorizontal
 import { cn } from '@/lib/utils';
 import { Manga } from '@/types';
 import { trackEvent, EVENTS } from '@/lib/gtag';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useFormatter } from 'next-intl';
+import { Eye } from 'lucide-react';
 
 // Localized in component using hooks
 const SORT_VALUE_MAP: Record<string, string> = {
@@ -29,6 +30,7 @@ const STATUS_VALUE_MAP: Record<string, string> = {
 export default function BrowsePage() {
     const t = useTranslations('browse');
     const tc = useTranslations('common');
+    const format = useFormatter();
 
     const SORT_OPTIONS = [
         { label: t('latestUpdate'), value: 'updatedAt:desc' },
@@ -107,8 +109,9 @@ export default function BrowsePage() {
                             rating: attrs.rating || 0,
                             status: (attrs.story_status || attrs.status) === 'completed' ? 'Completed' : 'Ongoing',
                             view_count: Number(attrs.view_count || 0),
+                            total_chapters: Number(attrs.total_chapters || 0),
                             genres: (attrs.categories || []).map((c: any) => c?.name || c).filter(Boolean),
-                            chapters: [],
+                            chapters: attrs.chapters ? attrs.chapters.slice(0, 3) : [],
                         };
                     });
 
@@ -119,8 +122,8 @@ export default function BrowsePage() {
                         total,
                     };
                 } else {
-                    // Use Strapi native browse (no text search)
-                    let query = `/stories?populate=*&sort=${sortBy}&pagination[page]=${page}&pagination[pageSize]=24`;
+                    // Use Strapi native browse
+                    let query = `/stories?populate[cover][fields][0]=url&populate[categories][fields][0]=name&populate[categories][fields][1]=slug&populate[chapters][fields][0]=chapter_number&populate[chapters][fields][1]=updatedAt&populate[chapters][fields][2]=title&populate[chapters][fields][3]=slug&populate[chapters][sort][0]=chapter_number:desc&sort=${sortBy}&pagination[page]=${page}&pagination[pageSize]=24`;
                     if (selectedGenre) query += `&filters[categories][slug][$eq]=${selectedGenre}`;
                     if (statusFilter) query += `&filters[story_status][$eq]=${statusFilter.toLowerCase()}`;
 
@@ -137,8 +140,20 @@ export default function BrowsePage() {
                                 rating: attrs.rating || 0,
                                 status: attrs.story_status === 'completed' ? 'Completed' : 'Ongoing',
                                 view_count: Number(attrs.view_count || 0),
+                                total_chapters: Number(attrs.total_chapters || 0),
                                 genres: (attrs.categories?.data || []).map((c: any) => c.attributes?.name || c.name) || [],
-                                chapters: [],
+                                chapters: (attrs.chapters?.data || attrs.chapters || [])
+                                    .map((chap: any) => {
+                                        const cAttrs = chap.attributes || chap;
+                                        return {
+                                            chapter_number: cAttrs.chapter_number,
+                                            updatedAt: cAttrs.updatedAt,
+                                            title: cAttrs.title,
+                                            slug: cAttrs.slug
+                                        };
+                                    })
+                                    .sort((a: any, b: any) => b.chapter_number - a.chapter_number) // sort by latest locally
+                                    .slice(0, 3),
                             };
                         });
                         paginationData = res.meta?.pagination || { page: 1, pageCount: 1, total: 0 };
@@ -324,13 +339,14 @@ export default function BrowsePage() {
                         ) : mangaList.length > 0 ? (
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-in fade-in-up duration-500">
                                 {mangaList.map((manga) => (
-                                    <div key={manga.id} className="group relative">
-                                        <Link href={`/manga/${manga.slug}`} className="block relative aspect-[3/4] rounded-2xl overflow-hidden bg-surface shadow-sm border border-white/5 group-hover:border-accent/50 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl">
+                                    <div key={manga.id} className="group relative flex flex-col gap-3">
+                                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface shadow-sm ring-1 ring-white/5 group-hover:ring-accent/50 transition-all duration-300 group-hover:shadow-[0_8px_24px_rgba(255,111,97,0.15)] group-hover:-translate-y-1">
                                             <Image
                                                 src={manga.cover || "https://placehold.co/400x600"}
                                                 alt={manga.title}
                                                 fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                loading="lazy"
                                             />
                                             {/* Labels */}
                                             <div className="absolute top-3 left-3 flex flex-col gap-1">
@@ -349,17 +365,43 @@ export default function BrowsePage() {
                                             </div>
 
                                             {/* Overlay Info */}
-                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-12">
-                                                <h3 className="font-bold text-white text-sm line-clamp-2 leading-tight group-hover:text-accent transition-colors">
-                                                    {manga.title}
-                                                </h3>
-                                                <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
-                                                    <span className="truncate max-w-[80px]">{manga.genres[0]}</span>
-                                                    <span>•</span>
-                                                    <span>{manga.chapters?.length || 0} {tc('chapter').toLowerCase()[0]}</span>
-                                                </div>
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                                <Link href={`/manga/${manga.slug}`} className="px-4 py-2 bg-accent text-white font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                                                    {tc("readNow")}
+                                                </Link>
                                             </div>
-                                        </Link>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <h3 className="font-bold text-white text-base leading-tight line-clamp-1 group-hover:text-accent transition-colors">
+                                                {manga.title}
+                                            </h3>
+
+                                            <div className="flex items-center justify-between mt-1 mb-2 text-xs text-muted">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-1 font-medium bg-white/5 px-2 py-0.5 rounded-md">
+                                                        <Eye className="w-3 h-3 text-accent" />
+                                                        {Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(manga.view_count || 0)}
+                                                    </div>
+                                                    <div className="flex items-center gap-1 font-medium bg-white/5 px-2 py-0.5 rounded-md" title={tc("chapter")}>
+                                                        <List className="w-3 h-3 text-muted" />
+                                                        {manga.total_chapters || manga.chapters?.length || 0}
+                                                    </div>
+                                                </div>
+                                                <span className="truncate max-w-[80px]">{manga.genres[0]}</span>
+                                            </div>
+
+                                            <div className="flex flex-col gap-1 mt-1 border-t border-white/5 pt-2">
+                                                {manga.chapters && manga.chapters.length > 0 ? manga.chapters.slice(0, 3).map((chapter: any, chapIdx: number) => (
+                                                    <Link key={chapIdx} href={`/read/${manga.slug}/${chapter.slug}`} className="flex items-center justify-between text-[11px] group/chap hover:bg-white/5 p-1 rounded transition-colors -mx-1 px-1">
+                                                        <span className="text-muted group-hover/chap:text-accent transition-colors font-medium">Ch. {chapter.chapter_number}</span>
+                                                        <span className="text-muted/60">{format.relativeTime(new Date(chapter.updatedAt))}</span>
+                                                    </Link>
+                                                )) : (
+                                                    <span className="text-[11px] text-muted p-1">{t('nochapter')}</span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

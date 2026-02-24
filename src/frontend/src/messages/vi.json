@@ -32,7 +32,10 @@
         "privacyPolicy": "Chính sách bảo mật",
         "dmca": "DMCA",
         "startReading": "Bắt đầu đọc",
-        "recently": "Gần đây"
+        "recently": "Gần đây",
+        "ongoing": "Đang tiến hành",
+        "noResultsDescription": "Không tìm thấy truyện nào phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử điều chỉnh từ khóa hoặc bộ lọc.",
+        "nochapter": "Không có chương nào"
     },
     "nav": {
         "home": "Trang chủ",
@@ -85,7 +88,8 @@
         "all": "Tất cả",
         "clearFilters": "Xóa lọc",
         "pageOf": "Trang {current} / {total}",
-        "genres": "Thể loại"
+        "genres": "Thể loại",
+        "noResultsDescription": "Không tìm thấy truyện nào phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử điều chỉnh từ khóa hoặc bộ lọc."
     },
     "manga": {
         "startReading": "Bắt đầu đọc",

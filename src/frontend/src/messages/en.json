@@ -32,7 +32,10 @@
         "privacyPolicy": "Privacy Policy",
         "dmca": "DMCA",
         "startReading": "Start Reading",
-        "recently": "Recently"
+        "recently": "Recently",
+        "ongoing": "Ongoing",
+        "noResultsDescription": "No manga found matching your search criteria. Please try adjusting your keywords or filters.",
+        "nochapter": "No Chapter yet"
     },
     "nav": {
         "home": "Home",

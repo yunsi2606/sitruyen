@@ -1,11 +1,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Star, TrendingUp, Grid, List as ListIcon, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, TrendingUp, Grid, List as ListIcon, Clock, Eye } from "lucide-react";
 import { HeroSlider } from "@/components/HeroSlider";
 import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
 import { Footer } from "@/components/Footer";
+import { getFormatter, getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ interface ContentItem {
   updatedAt: string;
   rating?: number;
   categories: { name: string }[];
-  chapters?: { chapter_number: number }[];
+  chapters?: { chapter_number: number; updatedAt: string; title?: string; slug?: string }[];
 }
 
 // Data Fetching
@@ -28,7 +29,7 @@ async function getHomePageData() {
     const result = await storyService.getHomepageStories();
     // Log data stats for debugging
     console.log(`HomePage: Hero ${result.heroSlider?.length}, Trending ${result.trending?.length}, Latest ${result.latest?.length}, Popular ${result.popular?.length}`);
-    return result as {
+    return result as unknown as {
       heroSlider: ContentItem[];
       trending: ContentItem[];
       latest: ContentItem[];
@@ -42,6 +43,7 @@ async function getHomePageData() {
 
 export default async function HomePage() {
   const data = await getHomePageData();
+  const format = await getFormatter();
 
   if (!data) {
     return (
@@ -52,6 +54,7 @@ export default async function HomePage() {
   }
 
   const { heroSlider, trending, latest, popular } = data;
+  const t = await getTranslations('common');
 
   return (
     <div className="flex flex-col min-h-screen bg-[#141414] text-foreground font-sans">
@@ -140,13 +143,16 @@ export default async function HomePage() {
                   <h3 className="font-bold text-white text-base leading-tight line-clamp-1 group-hover:text-accent transition-colors">
                     {item.title}
                   </h3>
-                  <div className="flex items-center justify-between text-xs text-muted">
-                    <span className="flex items-center gap-1">
-                      <Grid className="w-3 h-3" />
-                      {/* Chapter info */}
-                      Ch. {item.chapters && item.chapters.length > 0 ? item.chapters[item.chapters.length - 1].chapter_number : '?'}
-                    </span>
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 2h ago</span>
+                  <div className="flex flex-col gap-1 mt-1 border-t border-white/5 pt-2">
+                    {item.chapters && [...item.chapters].sort((a, b) => b.chapter_number - a.chapter_number).slice(0, 3).map((chapter, chapIdx) => (
+                      <Link key={chapIdx} href={`/read/${item.slug}/${chapter.slug}`} className="flex items-center justify-between text-[11px] group/chap hover:bg-white/5 p-1 rounded transition-colors -mx-1 px-1">
+                        <span className="text-muted group-hover/chap:text-accent transition-colors font-medium">Ch. {chapter.chapter_number}</span>
+                        <span className="text-muted/60">{format.relativeTime(new Date(chapter.updatedAt))}</span>
+                      </Link>
+                    ))}
+                    {(!item.chapters || item.chapters.length === 0) && (
+                      <span className="text-[11px] text-muted p-1">{t('nochapter')}</span>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {item.categories && item.categories.slice(0, 2).map((cat, idx) => (
