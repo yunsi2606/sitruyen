@@ -21,6 +21,14 @@ sitruyen/
 └── README.md           # This file
 ```
 
+## 🛠 Manga Scraper & Bulk Uploader Tool
+
+The project includes a standalone Node.js/React tool located in `src/manga-scraper-tool/`. This utility allows administrators to bulk download stories from external sites and automatically organize & upload local chapters directly into specific folders within the Strapi Media Library.
+
+For detailed documentation on how the scraper handles authentication, folder organization architecture, token expiration (401), and rate limit (429) prevention, please refer to the dedicated guide:
+
+👉 [**Manga Scraper & Uploader Technical Guide**](docs/MANGA_SCRAPER.md)
+
 ## Getting Started
 
 ### Prerequisites
