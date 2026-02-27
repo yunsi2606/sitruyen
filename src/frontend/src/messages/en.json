@@ -34,8 +34,13 @@
         "startReading": "Start Reading",
         "recently": "Recently",
         "ongoing": "Ongoing",
+        "dropped": "Dropped",
         "noResultsDescription": "No manga found matching your search criteria. Please try adjusting your keywords or filters.",
-        "nochapter": "No Chapter yet"
+        "nochapter": "No Chapter yet",
+        "audultWarning": "Adult Content Warning",
+        "audultWarningDescription": "This content may contain adult themes, images, or topics inappropriate for minors. Are you 18 years or older?",
+        "audultWarningButton": "I am 18+",
+        "audultWarningButtonCancel": "Cancel"
     },
     "nav": {
         "home": "Home",
@@ -72,6 +77,7 @@
         "allStatus": "All Status",
         "ongoing": "Ongoing",
         "completed": "Completed",
+        "dropped": "Dropped",
         "latestUpdate": "Latest Update",
         "mostPopular": "Most Popular",
         "newest": "Newest",

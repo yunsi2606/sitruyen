@@ -95,6 +95,10 @@
     "story_published_at": {
       "type": "date"
     },
+    "isAdultContent": {
+      "type": "boolean",
+      "default": false
+    },
     "is_featured": {
       "type": "boolean",
       "default": false

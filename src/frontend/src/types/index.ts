@@ -6,10 +6,11 @@ export interface Manga {
     description: string;
     genres: string[];
     rating: number;
-    status: "Ongoing" | "Completed";
+    status: "Ongoing" | "Completed" | "Dropped";
     view_count?: number;
     total_chapters?: number;
     chapters: Chapter[];
+    isAdultContent?: boolean;
 }
 
 export interface Chapter {

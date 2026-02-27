@@ -12,6 +12,7 @@ import { Manga } from '@/types';
 import { trackEvent, EVENTS } from '@/lib/gtag';
 import { useTranslations, useFormatter } from 'next-intl';
 import { Eye } from 'lucide-react';
+import { AdultCoverGuard } from '@/components/AdultCoverGuard';
 
 // Localized in component using hooks
 const SORT_VALUE_MAP: Record<string, string> = {
@@ -43,6 +44,7 @@ export default function BrowsePage() {
         { label: t('anyStatus'), value: '' },
         { label: t('ongoing'), value: 'Ongoing' },
         { label: t('completed'), value: 'Completed' },
+        { label: t('dropped'), value: 'Dropped' },
     ];
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -59,6 +61,33 @@ export default function BrowsePage() {
     const [mangaList, setMangaList] = useState<Manga[]>([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, pageCount: 1, total: 0 });
+
+    // Sync state with URL search params (e.g., when Header Search changes URL)
+    useEffect(() => {
+        const q = searchParams.get('q');
+        if (q !== null && q !== searchQuery) {
+            setSearchQuery(q);
+            setPage(1);
+        }
+
+        const genre = searchParams.get('genre');
+        if (genre !== null && genre !== selectedGenre) {
+            setSelectedGenre(genre);
+            setPage(1);
+        }
+
+        const sort = searchParams.get('sort');
+        if (sort !== null && sort !== sortBy) {
+            setSortBy(sort);
+            setPage(1);
+        }
+
+        const status = searchParams.get('status');
+        if (status !== null && status !== statusFilter) {
+            setStatusFilter(status);
+            setPage(1);
+        }
+    }, [searchParams]);
 
     // Fetch Genres for Sidebar
     useEffect(() => {
@@ -107,9 +136,10 @@ export default function BrowsePage() {
                             cover: getStrapiMedia(attrs.cover?.data?.attributes?.url || attrs.cover?.url || attrs.cover || null) || '',
                             description: '',
                             rating: attrs.rating || 0,
-                            status: (attrs.story_status || attrs.status) === 'completed' ? 'Completed' : 'Ongoing',
+                            status: (attrs.story_status || attrs.status)?.toLowerCase() === 'completed' ? 'Completed' : (attrs.story_status || attrs.status)?.toLowerCase() === 'dropped' ? 'Dropped' : 'Ongoing',
                             view_count: Number(attrs.view_count || 0),
                             total_chapters: Number(attrs.total_chapters || 0),
+                            isAdultContent: Boolean(attrs.isAdultContent),
                             genres: (attrs.categories || []).map((c: any) => c?.name || c).filter(Boolean),
                             chapters: attrs.chapters ? attrs.chapters.slice(0, 3) : [],
                         };
@@ -138,7 +168,8 @@ export default function BrowsePage() {
                                 cover: getStrapiMedia(attrs.cover?.data?.attributes?.url || attrs.cover?.url || null) || '',
                                 description: '',
                                 rating: attrs.rating || 0,
-                                status: attrs.story_status === 'completed' ? 'Completed' : 'Ongoing',
+                                status: (attrs.story_status || attrs.status)?.toLowerCase() === 'completed' ? 'Completed' : (attrs.story_status || attrs.status)?.toLowerCase() === 'dropped' ? 'Dropped' : 'Ongoing',
+                                isAdultContent: Boolean(attrs.isAdultContent),
                                 view_count: Number(attrs.view_count || 0),
                                 total_chapters: Number(attrs.total_chapters || 0),
                                 genres: (attrs.categories?.data || []).map((c: any) => c.attributes?.name || c.name) || [],
@@ -341,35 +372,39 @@ export default function BrowsePage() {
                                 {mangaList.map((manga) => (
                                     <div key={manga.id} className="group relative flex flex-col gap-3">
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface shadow-sm ring-1 ring-white/5 group-hover:ring-accent/50 transition-all duration-300 group-hover:shadow-[0_8px_24px_rgba(255,111,97,0.15)] group-hover:-translate-y-1">
-                                            <Image
-                                                src={manga.cover || "https://placehold.co/400x600"}
-                                                alt={manga.title}
-                                                fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                                loading="lazy"
-                                            />
-                                            {/* Labels */}
-                                            <div className="absolute top-3 left-3 flex flex-col gap-1">
-                                                <span className={cn(
-                                                    "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md text-white/90",
-                                                    manga.status === 'Completed' ? "bg-blue-500/80" : "bg-green-500/80"
-                                                )}>
-                                                    {manga.status === 'Completed' ? tc('completed') : tc('ongoing')}
-                                                </span>
-                                            </div>
+                                            <AdultCoverGuard isAdultContent={manga.isAdultContent}>
+                                                <>
+                                                    <Image
+                                                        src={manga.cover || "https://placehold.co/400x600"}
+                                                        alt={manga.title}
+                                                        fill
+                                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                        loading="lazy"
+                                                    />
+                                                    {/* Labels */}
+                                                    <div className="absolute top-3 left-3 flex flex-col gap-1">
+                                                        <span className={cn(
+                                                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md text-white/90",
+                                                            manga.status === 'Completed' ? "bg-blue-500/80" : manga.status === 'Dropped' ? "bg-red-500/80" : "bg-green-500/80"
+                                                        )}>
+                                                            {manga.status === 'Completed' ? tc('completed') : manga.status === 'Dropped' ? tc('dropped') : tc('ongoing')}
+                                                        </span>
+                                                    </div>
 
-                                            {/* Rating Badge */}
-                                            <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold flex items-center gap-1">
-                                                <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                                                {manga.rating || 'N/A'}
-                                            </div>
+                                                    {/* Rating Badge */}
+                                                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold flex items-center gap-1">
+                                                        <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                                                        {manga.rating || 'N/A'}
+                                                    </div>
 
-                                            {/* Overlay Info */}
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                                                <Link href={`/manga/${manga.slug}`} className="px-4 py-2 bg-accent text-white font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
-                                                    {tc("readNow")}
-                                                </Link>
-                                            </div>
+                                                    {/* Overlay Info */}
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                                        <Link href={`/manga/${manga.slug}`} className="px-4 py-2 bg-accent text-white font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                                                            {tc("readNow")}
+                                                        </Link>
+                                                    </div>
+                                                </>
+                                            </AdultCoverGuard>
                                         </div>
 
                                         <div className="space-y-1">
@@ -398,7 +433,7 @@ export default function BrowsePage() {
                                                         <span className="text-muted/60">{format.relativeTime(new Date(chapter.updatedAt))}</span>
                                                     </Link>
                                                 )) : (
-                                                    <span className="text-[11px] text-muted p-1">{t('nochapter')}</span>
+                                                    <span className="text-[11px] text-muted p-1">{tc('nochapter')}</span>
                                                 )}
                                             </div>
                                         </div>

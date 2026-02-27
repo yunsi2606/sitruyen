@@ -12,6 +12,8 @@ import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
 import { Manga, Chapter } from "@/types";
 import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
+import { AdultContentGuard } from "@/components/AdultContentGuard";
 
 interface Params {
     params: Promise<{
@@ -45,6 +47,7 @@ async function getManga(slug: string): Promise<Manga | null> {
             description: Array.isArray(attributes.description)
                 ? attributes.description.map((block: any) => block.children?.map((child: any) => child.text).join('')).join('\n\n')
                 : typeof attributes.description === 'string' ? attributes.description : "",
+            isAdultContent: attributes.isAdultContent || false,
 
             cover: getStrapiMedia(attributes.cover?.data?.attributes?.url || attributes.cover?.url || null) || "",
             rating: attributes.rating || 0,
@@ -108,6 +111,13 @@ export default async function MangaDetail(props: Params) {
 
     if (!manga) {
         notFound();
+    }
+
+    const cookieStore = await cookies();
+    const isAdultConfirmed = cookieStore.get("is_adult_confirmed")?.value === "true";
+
+    if (manga.isAdultContent && !isAdultConfirmed) {
+        return <AdultContentGuard mangaTitle={manga.title} />;
     }
 
     // Sort chapters

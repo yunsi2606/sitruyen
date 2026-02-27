@@ -28,7 +28,7 @@ export default {
         const { data } = event.params;
         strapi.log.info(`[Global Lifecycle] Chapter beforeCreate: ${data.title}`);
         if (data.title && !data.slug) {
-          data.slug = slugify(data.title, { lower: true, strict: true });
+          data.slug = slugify(data.title.replace(/\./g, '-'), { lower: true, strict: true });
         }
         // Auto-set publish date and VIP lock for new chapters
         if (!data.chap_published_at) {
@@ -43,7 +43,7 @@ export default {
         const { data } = event.params;
         strapi.log.info(`[Global Lifecycle] Chapter beforeUpdate: ${JSON.stringify(data)}`);
         if (data.title && !data.slug) {
-          data.slug = slugify(data.title, { lower: true, strict: true });
+          data.slug = slugify(data.title.replace(/\./g, '-'), { lower: true, strict: true });
         }
       },
 

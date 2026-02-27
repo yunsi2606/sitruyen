@@ -34,8 +34,13 @@
         "startReading": "Bắt đầu đọc",
         "recently": "Gần đây",
         "ongoing": "Đang tiến hành",
+        "dropped": "Đã drop",
         "noResultsDescription": "Không tìm thấy truyện nào phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử điều chỉnh từ khóa hoặc bộ lọc.",
-        "nochapter": "Không có chương nào"
+        "nochapter": "Không có chương nào",
+        "audultWarning": "Cảnh báo nội dung người lớn",
+        "audultWarningDescription": "Nội dung này có thể chứa các chủ đề, hình ảnh hoặc chủ đề người lớn không phù hợp với người dưới tuổi vị thành niên. Bạn có 18 tuổi trở lên không?",
+        "audultWarningButton": "Tôi 18+",
+        "audultWarningButtonCancel": "Hủy"
     },
     "nav": {
         "home": "Trang chủ",
@@ -72,6 +77,7 @@
         "allStatus": "Tất cả trạng thái",
         "ongoing": "Đang tiến hành",
         "completed": "Hoàn thành",
+        "dropped": "Đã drop",
         "latestUpdate": "Cập nhật mới nhất",
         "mostPopular": "Phổ biến nhất",
         "newest": "Mới nhất",

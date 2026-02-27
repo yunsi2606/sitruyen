@@ -6,6 +6,8 @@ import { Manga } from "@/types";
 import { Star, Clock } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { AdultCoverGuard } from "@/components/AdultCoverGuard";
+import { useTranslations } from "next-intl";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -17,7 +19,7 @@ interface MangaCardProps {
 }
 
 export function MangaCard({ manga, className }: MangaCardProps) {
-    const isOngoing = manga.status === "Ongoing";
+    const tc = useTranslations("common");
 
     return (
         <Link
@@ -29,21 +31,23 @@ export function MangaCard({ manga, className }: MangaCardProps) {
         >
             {/* Cover Image Wrapper - 3:4 Ratio */}
             <div className="relative w-full aspect-[3/4] bg-surface overflow-hidden">
-                <Image
-                    src={manga.cover}
-                    alt={manga.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                />
+                <AdultCoverGuard isAdultContent={(manga as any).isAdultContent}>
+                    <Image
+                        src={manga.cover}
+                        alt={manga.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                    />
+                </AdultCoverGuard>
 
                 {/* Status Badge */}
                 <div className={cn(
-                    "absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md text-white ring-1 ring-white/10",
-                    isOngoing ? "bg-green-500/90" : "bg-blue-500/90"
+                    "absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md text-white ring-1 ring-white/10 pointer-events-none",
+                    manga.status === "Ongoing" ? "bg-green-500/90" : manga.status === "Dropped" ? "bg-red-500/90" : "bg-blue-500/90"
                 )}>
-                    {manga.status}
+                    {tc(manga.status?.toLowerCase() || 'ongoing')}
                 </div>
 
                 {/* Gradient Overlay for subtle text contrast if needed, mostly clean though */}

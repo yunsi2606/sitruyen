@@ -8,7 +8,7 @@ module.exports = {
         strapi.log.info(`[Chapter Lifecycle] beforeCreate triggered. Data: ${JSON.stringify(data)}`);
 
         if (data.title && !data.slug) {
-            data.slug = slugify(data.title, { lower: true, strict: true });
+            data.slug = slugify(data.title.replace(/\./g, '-'), { lower: true, strict: true });
             strapi.log.info(`[Chapter Lifecycle] Generated slug: ${data.slug}`);
         }
     },
@@ -18,7 +18,7 @@ module.exports = {
         strapi.log.info(`[Chapter Lifecycle] beforeUpdate triggered. Data: ${JSON.stringify(data)}`);
 
         if (data.title && !data.slug) {
-            data.slug = slugify(data.title, { lower: true, strict: true });
+            data.slug = slugify(data.title.replace(/\./g, '-'), { lower: true, strict: true });
             strapi.log.info(`[Chapter Lifecycle] Generated slug (Update): ${data.slug}`);
         }
     },
