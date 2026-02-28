@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { Star, Clock, ListChecks, Play, BookOpen, Eye } from "lucide-react";
+import { Star, Clock, ListChecks, Play, BookOpen, Eye, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils"; // assuming cn utility available or inline
 import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
@@ -186,9 +186,21 @@ export default async function MangaDetail(props: Params) {
                                 </span>
                             ))}
                         </div>
+
+                        {manga.isAdultContent && (
+                            <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+                                <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                                <div className="space-y-1">
+                                    <h3 className="font-semibold text-red-300">{tc('audultWarning')}</h3>
+                                    <p className="text-sm leading-relaxed text-red-400/90">
+                                        {tc('audultWarningDescription')}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    <p className="text-lg leading-relaxed text-muted max-w-3xl">
+                    <p className="text-lg leading-relaxed text-muted max-w-3xl pt-2">
                         {manga.description}
                     </p>
 
