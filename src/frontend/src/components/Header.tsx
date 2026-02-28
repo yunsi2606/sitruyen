@@ -6,7 +6,7 @@ import { categoryService } from "@/services/api";
 import Link from 'next/link';
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, User, Menu, ChevronDown, List, Zap, LogOut, Crown } from "lucide-react";
+import { Bell, User, Menu, ChevronDown, List, Zap, LogOut, Crown, X } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslations } from "next-intl";
@@ -46,6 +46,21 @@ export function Header() {
         window.addEventListener("auth:change", handleAuthChange);
         return () => window.removeEventListener("auth:change", handleAuthChange);
     }, []);
+
+    // Close menu on route change
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
+
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isMenuOpen]);
 
     if (isReaderPage) return null;
 
@@ -195,10 +210,104 @@ export function Header() {
                         )}
                     </div>
 
-                    {/* Mobile Menu */}
-                    <button className="lg:hidden p-2 text-white" aria-label="Open menu">
-                        <Menu className="w-6 h-6" />
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        className="lg:hidden p-2 text-white hover:text-accent transition-colors focus:outline-none focus:ring-2 focus:ring-accent rounded-md"
+                        aria-label="Toggle menu"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                        {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
+                </div>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            <div className={cn(
+                "lg:hidden fixed inset-0 top-[72px] bg-[#141414] z-40 transition-transform duration-300 ease-in-out border-t border-white/5 overflow-y-auto",
+                isMenuOpen ? "translate-x-0" : "translate-x-full"
+            )}>
+                <div className="p-6 space-y-8 pb-24">
+                    {/* Mobile Search */}
+                    <div className="md:hidden">
+                        <SearchBar variant="inline" />
+                    </div>
+
+                    {/* Mobile Navigation Links */}
+                    <nav className="flex flex-col gap-4 text-base font-medium">
+                        <Link href="/" onClick={() => setIsMenuOpen(false)} className="py-2 text-white hover:text-accent transition-colors border-b border-white/5">
+                            {t("home")}
+                        </Link>
+                        <Link href="/browse?sort=updatedAt:desc" onClick={() => setIsMenuOpen(false)} className="py-2 text-white hover:text-accent transition-colors border-b border-white/5">
+                            {t("latest")}
+                        </Link>
+                        <Link href="/browse?sort=view_count:desc" onClick={() => setIsMenuOpen(false)} className="py-2 text-white hover:text-accent transition-colors border-b border-white/5">
+                            {t("popular")}
+                        </Link>
+                    </nav>
+
+                    {/* Genres Section */}
+                    <div>
+                        <h4 className="text-sm font-bold text-muted mb-4 uppercase tracking-wider">{t("genres")}</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {genres.slice(0, 15).map((genre: any) => (
+                                <Link
+                                    key={genre.id}
+                                    href={`/browse?genre=${genre.attributes?.slug || genre.slug}`}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="px-3 py-1.5 rounded-lg bg-surface text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors border border-white/5"
+                                >
+                                    {genre.attributes?.name || genre.name}
+                                </Link>
+                            ))}
+                            <Link href="/browse" onClick={() => setIsMenuOpen(false)} className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-sm font-medium hover:bg-accent/20 transition-colors">
+                                {t("viewAllGenres")}
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Mobile Auth Actions */}
+                    <div className="pt-4 border-t border-white/5 space-y-4">
+                        {(!user || user.plan !== 'vip') && (
+                            <Link href="/vip-upgrade" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-bold uppercase shadow-lg shadow-yellow-500/20">
+                                <Crown className="w-5 h-5" />
+                                {t("goPremium")}
+                            </Link>
+                        )}
+
+                        {user ? (
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3 p-4 bg-surface rounded-xl border border-white/5">
+                                    <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-lg font-bold text-white uppercase shrink-0">
+                                        {user.username?.[0] || "U"}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-white font-bold truncate">{user.username}</p>
+                                        <p className="text-sm text-muted truncate">{user.email}</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center gap-2 py-3 bg-surface hover:bg-white/10 text-white rounded-xl transition-colors border border-white/5">
+                                        <User className="w-4 h-4" /> {t("profile")}
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            auth.logout();
+                                            setUser(null);
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition-colors border border-red-500/20"
+                                    >
+                                        <LogOut className="w-4 h-4" /> {tc("logout")}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors">
+                                <User className="w-5 h-5" />
+                                {tc("login")}
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>
