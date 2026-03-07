@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import { getStrapiURL } from "@/lib/api";
 
 interface StickerDisplayProps {
     sticker: {
@@ -26,7 +27,7 @@ export function StickerDisplay({ sticker, size = 120, autoplay = false }: Sticke
     const lottieRef = useRef<LottieRefCurrentProps | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const fileUrl = sticker.file?.url ? (sticker.file.url.startsWith('http') ? sticker.file.url : `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${sticker.file.url}`) : null;
+    const fileUrl = sticker.file?.url ? (sticker.file.url.startsWith('http') ? sticker.file.url : `${getStrapiURL()}${sticker.file.url}`) : null;
     const isLottie = sticker.file?.mime?.includes("json") || fileUrl?.endsWith(".json");
 
     // Fetch Lottie JSON if needed

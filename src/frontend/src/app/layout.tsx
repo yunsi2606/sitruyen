@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { RuntimeConfig } from "@/components/RuntimeConfig";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import Script from "next/script";
@@ -21,6 +22,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <head>
+        <RuntimeConfig />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-LWNE0EXJNZ"
           strategy="afterInteractive"

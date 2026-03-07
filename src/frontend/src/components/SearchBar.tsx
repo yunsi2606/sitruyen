@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Search, TrendingUp, X, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { getStrapiMedia } from "@/lib/api";
+import { getStrapiMedia, getStrapiURL } from "@/lib/api";
 import { trackEvent, EVENTS } from "@/lib/gtag";
 import { useTranslations } from "next-intl";
 
@@ -35,13 +35,11 @@ interface HotSearch {
     score: number;
 }
 
-// API helpers
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-
 async function fetchAutocomplete(q: string): Promise<Suggestion[]> {
+    const API_URL = getStrapiURL();
     try {
         const res = await fetch(
-            `${STRAPI_URL}/api/stories/autocomplete?q=${encodeURIComponent(q)}&limit=8`,
+            `${API_URL}/api/stories/autocomplete?q=${encodeURIComponent(q)}&limit=8`,
             { cache: "no-store" }
         );
         if (!res.ok) return [];
@@ -53,8 +51,9 @@ async function fetchAutocomplete(q: string): Promise<Suggestion[]> {
 }
 
 async function fetchHotSearches(): Promise<HotSearch[]> {
+    const API_URL = getStrapiURL();
     try {
-        const res = await fetch(`${STRAPI_URL}/api/stories/hot-searches?limit=8&window=24h`, {
+        const res = await fetch(`${API_URL}/api/stories/hot-searches?limit=8&window=24h`, {
             next: { revalidate: 60 }, // Cache 60s on server
         });
         if (!res.ok) return [];
@@ -71,8 +70,9 @@ function logSearch(keyword: string) {
         search_term: keyword
     });
 
+    const API_URL = getStrapiURL();
     // Fire-and-forget: don't await, don't block UI
-    fetch(`${STRAPI_URL}/api/stories/search-log`, {
+    fetch(`${API_URL}/api/stories/search-log`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword }),

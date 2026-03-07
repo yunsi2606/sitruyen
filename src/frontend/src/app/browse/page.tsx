@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getStrapiMedia } from '@/lib/api';
+import { getStrapiMedia, getStrapiURL } from '@/lib/api';
 import { categoryService, storyService } from '@/services/api';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -111,8 +111,7 @@ export default function BrowsePage() {
                 let paginationData = { page: 1, pageCount: 1, total: 0 };
 
                 if (searchQuery.trim()) {
-                    // Use Meilisearch search API
-                    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+                    const API_URL = getStrapiURL();
                     const params = new URLSearchParams({
                         q: searchQuery,
                         page: String(page),
@@ -122,7 +121,7 @@ export default function BrowsePage() {
                     if (selectedGenre) params.set('genre', selectedGenre);
                     if (statusFilter) params.set('status', statusFilter.toLowerCase());
 
-                    const res = await fetch(`${STRAPI_URL}/api/stories/search?${params.toString()}`);
+                    const res = await fetch(`${API_URL}/api/stories/search?${params.toString()}`);
                     const data = await res.json();
 
                     // Meilisearch or DB fallback format

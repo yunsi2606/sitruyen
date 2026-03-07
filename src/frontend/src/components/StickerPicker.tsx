@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { StickerDisplay } from "./StickerDisplay";
+import { getStrapiURL } from "@/lib/api";
 
 interface StickerPickerProps {
     packs: any[];
@@ -28,7 +29,7 @@ export function StickerPicker({ packs, onSelect }: StickerPickerProps) {
                     const iconUrl = pack.icon?.url
                         ? (pack.icon.url.startsWith('http')
                             ? pack.icon.url
-                            : `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${pack.icon.url}`)
+                            : `${getStrapiURL()}${pack.icon.url}`)
                         : null;
 
                     const isActive = pack.id === selectedPackId;
