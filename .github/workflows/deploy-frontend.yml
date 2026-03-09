@@ -1,0 +1,68 @@
+# # CI/CD Pipeline: Build & Deploy Frontend (Next.js) to Azure Container Apps
+# # ---
+# # Triggers on push to main branch when frontend source code changes.
+# # Builds Docker image, pushes to Azure Container Registry (ACR),
+# # then deploys a new revision to Azure Container Apps.
+
+# name: "Deploy Frontend"
+
+# on:
+#   push:
+#     branches: [main]
+#     paths:
+#       - "src/frontend/**"
+#       - ".github/workflows/deploy-frontend.yml"
+#   workflow_dispatch: # Allow manual trigger from GitHub UI
+
+# env:
+#   # Azure Container Registry
+#   ACR_NAME: sitruyen # ACR name (sitruyen.azurecr.io)
+#   IMAGE_NAME: sitruyen-frontend
+
+#   # Azure Container App
+#   RESOURCE_GROUP: rg-sitruyen-dev
+#   CONTAINER_APP_NAME: sitruyen-frontend
+#   CONTAINER_APP_ENV: env-sitruyen-dev
+
+# jobs:
+#   build-and-deploy:
+#     name: "Build & Deploy Frontend"
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # Checkout source code
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       # Login to Azure
+#       - name: Login to Azure
+#         uses: azure/login@v2
+#         with:
+#           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+#       # Login to Azure Container Registry
+#       - name: Login to ACR
+#         run: az acr login --name ${{ env.ACR_NAME }}
+
+#       # Build & Push Docker image
+#       - name: Build and push Docker image
+#         run: |
+#           IMAGE_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+#           IMAGE_LATEST="${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
+
+#           docker build \
+#             -f src/frontend/Dockerfile \
+#             -t "$IMAGE_TAG" \
+#             -t "$IMAGE_LATEST" \
+#             src/frontend
+
+#           docker push "$IMAGE_TAG"
+#           docker push "$IMAGE_LATEST"
+
+#       # Deploy to Azure Container App
+#       - name: Deploy to Azure Container Apps
+#         uses: azure/container-apps-deploy-action@v1
+#         with:
+#           resourceGroup: ${{ env.RESOURCE_GROUP }}
+#           containerAppName: ${{ env.CONTAINER_APP_NAME }}
+#           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}

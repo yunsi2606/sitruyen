@@ -872,6 +872,8 @@ export interface ApiStoryStory extends Struct.CollectionTypeSchema {
     follows: Schema.Attribute.Relation<'oneToMany', 'api::follow.follow'>;
     is_featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     is_trending: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isAdultContent: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::story.story'> &
       Schema.Attribute.Private;
@@ -1450,6 +1452,7 @@ export interface PluginUsersPermissionsUser
       }>;
     exp: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     follows: Schema.Attribute.Relation<'oneToMany', 'api::follow.follow'>;
+    last_daily_exp: Schema.Attribute.DateTime;
     level: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

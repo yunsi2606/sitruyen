@@ -1,0 +1,68 @@
+# CI/CD Pipeline: Build & Deploy Backend (Strapi) to Azure Container Apps
+# ---
+# Triggers on push to main branch when backend source code changes.
+# Builds Docker image, pushes to Azure Container Registry (ACR),
+# then deploys a new revision to Azure Container Apps.
+
+name: "Deploy Backend"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/backend/**"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+env:
+  # Azure Container Registry
+  ACR_NAME: sitruyen # ACR name (sitruyen.azurecr.io)
+  IMAGE_NAME: sitruyen-backend
+
+  # Azure Container App
+  RESOURCE_GROUP: sitruyen-rg
+  CONTAINER_APP_NAME: sitruyen-backend
+  CONTAINER_APP_ENV: sitruyen-env
+
+jobs:
+  build-and-deploy:
+    name: "Build & Deploy Backend"
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Login to Azure Container Registry
+      - name: Login to ACR
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      # Build & Push Docker image
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE_LATEST="${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
+
+          docker build \
+            -f src/backend/Dockerfile \
+            -t "$IMAGE_TAG" \
+            -t "$IMAGE_LATEST" \
+            src/backend
+
+          docker push "$IMAGE_TAG"
+          docker push "$IMAGE_LATEST"
+
+      # Deploy to Azure Container App
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
