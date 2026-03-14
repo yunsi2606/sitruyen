@@ -43,6 +43,12 @@ services:
       B2_APP_KEY: ${B2_APP_KEY}
       B2_BUCKET_NAME: ${B2_BUCKET_NAME}
       B2_REGION: ${B2_REGION}
+      MINIO_URL: ${MINIO_URL}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_KEY_ID: ${MINIO_KEY_ID}
+      MINIO_APP_KEY: ${MINIO_APP_KEY}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      MINIO_REGION: ${MINIO_REGION}
       UV_THREADPOOL_SIZE: "128"
     volumes:
       - strapi_uploads:/app/public/uploads

@@ -3,16 +3,17 @@ export default () => ({
         config: {
             provider: 'aws-s3',
             providerOptions: {
-                baseUrl: process.env.CDN_URL,
+                baseUrl: process.env.MINIO_URL,
                 s3Options: {
                     credentials: {
-                        accessKeyId: process.env.B2_KEY_ID,
-                        secretAccessKey: process.env.B2_APP_KEY,
+                        accessKeyId: process.env.MINIO_KEY_ID,
+                        secretAccessKey: process.env.MINIO_APP_KEY,
                     },
-                    region: process.env.B2_REGION,
-                    endpoint: process.env.B2_ENDPOINT,
+                    region: process.env.MINIO_REGION,
+                    endpoint: process.env.MINIO_ENDPOINT,
+                    forcePathStyle: true,
                     params: {
-                        Bucket: process.env.B2_BUCKET_NAME,
+                        Bucket: process.env.MINIO_BUCKET_NAME,
                     },
                 },
             },

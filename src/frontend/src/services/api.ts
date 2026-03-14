@@ -184,7 +184,7 @@ export const chapterService = {
             + `&populate[story][populate][chapters][sort][0]=chapter_number:desc`;
 
         const options: FetchOptions = {};
-        if (token) {
+        if (token && token !== "undefined") {
             options.headers = { Authorization: `Bearer ${token}` };
         }
 
