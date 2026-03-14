@@ -17,12 +17,12 @@ on:
 env:
   # Azure Container Registry
   ACR_NAME: sitruyen # ACR name (sitruyen.azurecr.io)
-  IMAGE_NAME: sitruyen-backend
+  IMAGE_NAME: sitruyen-strapi
 
   # Azure Container App
-  RESOURCE_GROUP: sitruyen-rg
-  CONTAINER_APP_NAME: sitruyen-backend
-  CONTAINER_APP_ENV: sitruyen-env
+  RESOURCE_GROUP: rg-sitruyen-dev
+  CONTAINER_APP_NAME: sitruyen-strapi
+  CONTAINER_APP_ENV: env-sitruyen-dev
 
 jobs:
   build-and-deploy:
