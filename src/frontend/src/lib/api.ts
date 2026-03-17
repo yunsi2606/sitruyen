@@ -58,7 +58,7 @@ export const getStrapiMedia = (url: string | null) => {
         return url;
     }
     if (url.startsWith("http") || url.startsWith("//")) {
-        return url;
+        return `/api/media?url=${encodeURIComponent(url)}`;
     }
 
     const publicUrl = typeof window !== 'undefined' ? getPublicApiUrl() : INTERNAL_API_URL;
