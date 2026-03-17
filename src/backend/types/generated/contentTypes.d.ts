@@ -671,6 +671,7 @@ export interface ApiRatingRating extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    review: Schema.Attribute.Text;
     score: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {

@@ -19,6 +19,7 @@ function generateChapters(count: number): Chapter[] {
 export const MOCK_MANGA_LIST: Manga[] = [
     {
         id: "1",
+        documentId: "1",
         title: "Solo Leveling",
         slug: "solo-leveling",
         cover: "https://placehold.co/300x450/png?text=Solo+Leveling",
@@ -30,6 +31,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "2",
+        documentId: "2",
         title: "One Piece",
         slug: "one-piece",
         cover: "https://placehold.co/300x450/png?text=One+Piece",
@@ -41,6 +43,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "3",
+        documentId: "3",
         title: "Naruto",
         slug: "naruto",
         cover: "https://placehold.co/300x450/png?text=Naruto",
@@ -52,6 +55,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "4",
+        documentId: "4",
         title: "Attack on Titan",
         slug: "attack-on-titan",
         cover: "https://placehold.co/300x450/png?text=AoT",
@@ -63,6 +67,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "5",
+        documentId: "5",
         title: "Demon Slayer",
         slug: "demon-slayer",
         cover: "https://placehold.co/300x450/png?text=Demon+Slayer",
@@ -74,6 +79,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "6",
+        documentId: "6",
         title: "Bleach",
         slug: "bleach",
         cover: "https://placehold.co/300x450/png?text=Bleach",
@@ -85,6 +91,7 @@ export const MOCK_MANGA_LIST: Manga[] = [
     },
     {
         id: "7",
+        documentId: "7",
         title: "Boku no Hero Academia",
         slug: "my-hero-academia",
         cover: "https://placehold.co/300x450/png?text=My+Hero+Academia",

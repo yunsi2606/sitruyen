@@ -414,3 +414,50 @@ export const userLevelService = {
         return res.data;
     }
 };
+
+// Rating / Review Service
+export const ratingService = {
+    /**
+     * Create or update a rating for a story. Auth required.
+     */
+    async upsertRating(storyDocumentId: string, score: number, review: string | null, token: string) {
+        const res = await fetchAPI('/ratings/upsert', {}, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                data: { score, review, story: storyDocumentId },
+            }),
+        });
+        if (res.error) {
+            throw new Error(res.error.message || 'Failed to save rating');
+        }
+        return res.data;
+    },
+
+    /**
+     * Get all ratings for a story (public, paginated).
+     */
+    async getStoryRatings(storyDocumentId: string, page = 1, pageSize = 5) {
+        const res = await fetchAPI(`/ratings/story/${storyDocumentId}?page=${page}&pageSize=${pageSize}`);
+        return res; // { data: Rating[], meta: { pagination } }
+    },
+
+    /**
+     * Get the current logged-in user's rating for a specific story.
+     */
+    async getMyRating(storyId: number, userId: number, token: string) {
+        try {
+            const res = await fetchAPI(
+                `/ratings?filters[story][id][$eq]=${storyId}&filters[user][id][$eq]=${userId}&populate[user][fields][0]=username`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return res.data?.[0] || null;
+        } catch {
+            return null;
+        }
+    },
+};

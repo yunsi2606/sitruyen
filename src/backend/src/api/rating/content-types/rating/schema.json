@@ -27,6 +27,9 @@
       "relation": "manyToOne",
       "target": "api::story.story",
       "inversedBy": "ratings"
+    },
+    "review": {
+      "type": "text"
     }
   }
 }

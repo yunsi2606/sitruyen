@@ -1,13 +1,14 @@
 
 import { ChapterList } from "@/components/ChapterList";
 import { CommentSection } from "@/components/CommentSection";
+import { ReviewSection } from "@/components/ReviewSection";
 import { TrackMangaView } from "@/components/TrackMangaView";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Star, Clock, ListChecks, Play, BookOpen, Eye, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils"; // assuming cn utility available or inline
+import { cn } from "@/lib/utils";
 import { getStrapiMedia } from "@/lib/api";
 import { storyService } from "@/services/api";
 import { Manga, Chapter } from "@/types";
@@ -41,6 +42,7 @@ async function getManga(slug: string): Promise<Manga | null> {
         }
         return {
             id: item.id.toString(),
+            documentId: item.documentId || attributes.documentId || "",
             title: attributes.title,
             slug: attributes.slug,
 
@@ -244,6 +246,11 @@ export default async function MangaDetail(props: Params) {
                         <ChapterList chapters={sortedChapters} mangaSlug={manga.slug} />
                     </div>
                 </div>
+            </div>
+
+            {/* Review & Rating Section */}
+            <div className="border-t border-white/10 pt-16">
+                <ReviewSection storyDocumentId={manga.documentId} storyId={Number(manga.id)} />
             </div>
 
             {/* Comments Section */}

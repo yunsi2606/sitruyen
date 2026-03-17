@@ -53,6 +53,7 @@ async function getChapterData(slug: string, chapterSlug: string) {
         return {
             manga: {
                 id: storyData.id?.toString() || "0",
+                documentId: storyData.id,
                 title: storyData.title,
                 slug: storyData.slug,
                 cover: "", // Not needed here
